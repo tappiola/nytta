@@ -1,0 +1,32 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model TopCategory {
+  id         Int        @id @default(autoincrement())
+  name       String
+  categories Category[]
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String
+  topCategoryId Int
+  TopCategory   TopCategory   @relation(fields: [topCategoryId], references: [id])
+  SubCategory   SubCategory[]
+}
+
+model SubCategory {
+  id               Int      @id @default(autoincrement())
+  name             String
+  parentCategory   Category @relation(fields: [parentCategoryId], references: [id])
+  parentCategoryId Int
+}
