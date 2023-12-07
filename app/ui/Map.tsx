@@ -1,8 +1,15 @@
 "use client";
-import mapboxgl, { GeoJSONSource, LngLatLike } from "mapbox-gl";
+import mapboxgl, {
+  GeoJSONSource,
+  GeolocateControl,
+  LngLatLike,
+} from "mapbox-gl";
 import "./Map.style.css";
 import { Feature, Point } from "geojson";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_GL_TOKEN =
   "pk.eyJ1IjoidGFwcGlvbGEiLCJhIjoiY2t6eHhuM2N6MDYyMTJ2cDcxcDVsem8zNiJ9.OByK2fsCvb8XsvT2OYUEjA";
@@ -38,13 +45,21 @@ const Map: React.FC = () => {
     // Create the map
     map.current = new mapboxgl.Map({
       container: mapContainer.current!,
-      style: "mapbox://styles/mapbox/outdoors-v11?optimize=true",
+      style: "mapbox://styles/mapbox/streets-v12?optimize=true",
       center: [-0.1278, 51.5074],
       zoom: 11,
     });
 
+    const geoControl = new GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      showUserLocation: true,
+    });
+    map.current!.addControl(geoControl, "top-right");
+    geoControl.on("geolocate", (e) => console.log(e));
+
     map.current.on("load", () => {
-      // Add markers to map
       map.current!.addLayer({
         id: "places",
         type: "symbol",
@@ -56,11 +71,30 @@ const Map: React.FC = () => {
           },
         },
         layout: {
-          "icon-image": "lodging-11",
+          "icon-image": "lodging-12",
           "icon-size": 1.5,
           "icon-allow-overlap": true,
         },
       });
+
+      const geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+        countries: "GB",
+      });
+      map.current!.addControl(geocoder, "top-left");
+
+      geocoder.on(
+        "result",
+        ({
+          result: {
+            text,
+            place_name,
+            context,
+            geometry: { coordinates },
+          },
+        }) => console.log(text, place_name, context, coordinates),
+      );
 
       // When clicking on a map marker
       map.current!.on("click", "places", ({ features }) => {
@@ -68,7 +102,7 @@ const Map: React.FC = () => {
           return;
         }
 
-        const match = features[0] as Feature<Point>;
+        const match = features?.[0] as Feature<Point>;
         const coordinates = match.geometry.coordinates.slice();
 
         // Show popup

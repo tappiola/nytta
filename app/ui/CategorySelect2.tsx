@@ -39,7 +39,7 @@ const CategorySelect = ({ categories }: { categories: Categories }) => {
       onSelectionChange={(e) =>
         setSelectedCategories(e.value as TreeCheckboxSelectionKeys)
       }
-      className="w-full md:w-30rem"
+      className="w-full md:w-30rem overflow-y-auto"
       filter
       filterMode="lenient"
       filterPlaceholder="Filter categories"
