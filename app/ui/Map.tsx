@@ -6,22 +6,32 @@ import mapboxgl, {
 } from "mapbox-gl";
 import "./Map.style.css";
 import { Feature, Point } from "geojson";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { UserLocation } from "@/app/ui/types";
 
 const MAPBOX_GL_TOKEN =
   "pk.eyJ1IjoidGFwcGlvbGEiLCJhIjoiY2t6eHhuM2N6MDYyMTJ2cDcxcDVsem8zNiJ9.OByK2fsCvb8XsvT2OYUEjA";
 
-type DataPoint = { longitude: number; latitude: number };
-
-const Map: React.FC = () => {
-  const [userLocation, setUserLocation] = useState<LngLatLike | null>(null);
+const Map = ({
+  userLocation,
+  setUserLocation,
+}: {
+  userLocation: UserLocation;
+  setUserLocation: Dispatch<SetStateAction<UserLocation>>;
+}) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
-  const getCoordinates = (item: DataPoint) =>
+  const getCoordinates = (item: UserLocation) =>
     [item.longitude, item.latitude] as LngLatLike;
 
   const generateFeature = useCallback(() => {
@@ -33,7 +43,7 @@ const Map: React.FC = () => {
       },
       geometry: {
         type: "Point",
-        coordinates: userLocation,
+        coordinates: getCoordinates(userLocation),
       },
     } as Feature<Point>;
   }, [userLocation]);
@@ -93,7 +103,19 @@ const Map: React.FC = () => {
             context,
             geometry: { coordinates },
           },
-        }) => console.log(text, place_name, context, coordinates),
+        }) =>
+          setUserLocation({
+            shortName: text,
+            longName: place_name,
+            ...(context as { id: string; text: string }[]).reduce<{
+              [key: string]: string;
+            }>(
+              (prev, { id, text }) => ({ ...prev, [id.split(".")[0]]: text }),
+              {},
+            ),
+            latitude: coordinates[1],
+            longitude: coordinates[0],
+          }),
       );
 
       // When clicking on a map marker
@@ -122,20 +144,22 @@ const Map: React.FC = () => {
         map.current!.getCanvas().style.cursor = "";
       });
     });
-  }, [generateFeature]);
+  }, [generateFeature, setUserLocation]);
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation([position.coords.longitude, position.coords.latitude]);
-      });
+      navigator.geolocation.getCurrentPosition(
+        ({ coords: { longitude, latitude } }) => {
+          setUserLocation({ longitude, latitude });
+        },
+      );
     }
   }, []);
 
   useEffect(() => {
-    if (map.current && userLocation) {
+    if (map.current && userLocation.latitude && userLocation.longitude) {
       map.current.flyTo({
-        center: userLocation,
+        center: getCoordinates(userLocation),
         zoom: 17,
       });
     }

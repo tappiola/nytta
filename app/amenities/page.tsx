@@ -1,16 +1,10 @@
 import { getCategories } from "@/app/lib/actions";
-import CategorySelect2 from "@/app/ui/CategorySelect2";
-import Map from "@/app/ui/Map";
+import AmenitiesPicker from "@/app/ui/AmenitiesPicker";
 
 const Amenities = async () => {
   const categories = await getCategories();
 
-  return (
-    <div className="flex h-screen">
-      <CategorySelect2 categories={categories} />
-      <Map />
-    </div>
-  );
+  return <AmenitiesPicker categories={categories} />;
 };
 
 export default Amenities;

@@ -30,3 +30,25 @@ model SubCategory {
   parentCategory   Category @relation(fields: [parentCategoryId], references: [id])
   parentCategoryId Int
 }
+
+model User {
+  id    Int      @id @default(autoincrement())
+  name  String
+  choices  UserChoice[]
+}
+
+model UserChoice {
+  id          Int       @id @default(autoincrement())
+  amenity     String
+  shortName   String?
+  longName    String?
+  district    String?
+  place       String?
+  postcode    String?
+  region      String?
+  country     String?
+  latitude    Float
+  longitude   Float
+  userId      Int?
+  user        User?     @relation(fields: [userId], references: [id])
+}

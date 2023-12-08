@@ -1,23 +1,19 @@
 "use client";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { getCategories } from "@/app/lib/actions";
 import { Prisma } from "@prisma/client";
 import { Tree, TreeCheckboxSelectionKeys } from "primereact/tree";
 
 type Categories = Prisma.PromiseReturnType<typeof getCategories>;
-const CategorySelect = ({ categories }: { categories: Categories }) => {
-  const [selectedCategories, setSelectedCategories] =
-    // @ts-ignore
-    useState<TreeCheckboxSelectionKeys>([]);
-
-  const groupedItemTemplate = (option: { label: string }) => {
-    return (
-      <div className="flex align-items-center">
-        <div>{option.label}</div>
-      </div>
-    );
-  };
-
+const CategorySelect = ({
+  selectedCategories,
+  setSelectedCategories,
+  categories,
+}: {
+  categories: Categories;
+  selectedCategories: TreeCheckboxSelectionKeys;
+  setSelectedCategories: Dispatch<SetStateAction<TreeCheckboxSelectionKeys>>;
+}) => {
   const d3 = categories.map((c) => ({
     key: c.id,
     label: c.name,
