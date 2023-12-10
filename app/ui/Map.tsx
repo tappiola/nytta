@@ -3,6 +3,7 @@ import mapboxgl, {
   GeoJSONSource,
   GeolocateControl,
   LngLatLike,
+  Marker,
 } from "mapbox-gl";
 import "./Map.style.css";
 import { Feature, Point } from "geojson";
@@ -31,6 +32,41 @@ const Map = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
+  let marker: Marker;
+
+  const setMarker2 = (coords: LngLatLike) => {
+    if (!marker) {
+      marker = new mapboxgl.Marker().setLngLat(coords).addTo(map.current!);
+    } else {
+      marker.setLngLat(coords);
+    }
+  };
+
+  const fetchData = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
+      );
+
+      if (response.ok) {
+        const { features } = await response.json();
+        const { address: longName, ...other } = transformLocation(
+          features as { id: string; text: string }[],
+        );
+
+        setUserLocation((userLocation) => ({
+          ...userLocation,
+          longName,
+          ...other,
+        }));
+      } else {
+        throw new Error("Failed to fetch data");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const getCoordinates = (item: UserLocation) =>
     [item.longitude, item.latitude] as LngLatLike;
 
@@ -47,6 +83,11 @@ const Map = ({
       },
     } as Feature<Point>;
   }, [userLocation]);
+
+  const transformLocation = (context: { id: string; text: string }[]) =>
+    context.reduce<{
+      [key: string]: string;
+    }>((prev, { id, text }) => ({ ...prev, [id.split(".")[0]]: text }), {});
 
   useEffect(() => {
     mapboxgl.accessToken = MAPBOX_GL_TOKEN;
@@ -67,7 +108,16 @@ const Map = ({
       showUserLocation: true,
     });
     map.current!.addControl(geoControl, "top-right");
-    geoControl.on("geolocate", (e) => console.log(e));
+
+    geoControl.on(
+      "geolocate",
+      // @ts-ignore
+      ({
+        coords: { latitude, longitude },
+      }: {
+        coords: { latitude: number; longitude: number };
+      }) => fetchData(latitude, longitude),
+    );
 
     map.current.on("load", () => {
       map.current!.addLayer({
@@ -83,16 +133,20 @@ const Map = ({
         layout: {
           "icon-image": "lodging-12",
           "icon-size": 1.5,
-          "icon-allow-overlap": true,
         },
       });
 
       const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl,
+        mapboxgl,
+        marker,
         countries: "GB",
       });
       map.current!.addControl(geocoder, "top-left");
+
+      map.current!.on("click", (e) => {
+        setMarker2(e.lngLat);
+      });
 
       geocoder.on(
         "result",
@@ -103,19 +157,16 @@ const Map = ({
             context,
             geometry: { coordinates },
           },
-        }) =>
+        }) => {
           setUserLocation({
             shortName: text,
             longName: place_name,
-            ...(context as { id: string; text: string }[]).reduce<{
-              [key: string]: string;
-            }>(
-              (prev, { id, text }) => ({ ...prev, [id.split(".")[0]]: text }),
-              {},
-            ),
+            ...transformLocation(context as { id: string; text: string }[]),
             latitude: coordinates[1],
             longitude: coordinates[0],
-          }),
+          });
+          fetchData(coordinates[1], coordinates[0]);
+        },
       );
 
       // When clicking on a map marker
@@ -154,7 +205,7 @@ const Map = ({
         },
       );
     }
-  }, []);
+  }, [setUserLocation]);
 
   useEffect(() => {
     if (map.current && userLocation.latitude && userLocation.longitude) {
@@ -162,8 +213,9 @@ const Map = ({
         center: getCoordinates(userLocation),
         zoom: 17,
       });
+      setMarker2(getCoordinates(userLocation));
     }
-  }, [map, userLocation]);
+  }, [map, setMarker2, userLocation]);
 
   useEffect(() => {
     if (!map.current || !map.current.getSource("places")) {

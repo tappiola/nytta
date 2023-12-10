@@ -32,23 +32,25 @@ model SubCategory {
 }
 
 model User {
-  id    Int      @id @default(autoincrement())
-  name  String
-  choices  UserChoice[]
+  id      Int          @id @default(autoincrement())
+  name    String
+  choices UserChoice[]
 }
 
 model UserChoice {
-  id          Int       @id @default(autoincrement())
-  amenity     String
-  shortName   String?
-  longName    String?
-  district    String?
-  place       String?
-  postcode    String?
-  region      String?
-  country     String?
-  latitude    Float
-  longitude   Float
-  userId      Int?
-  user        User?     @relation(fields: [userId], references: [id])
+  id           Int     @id @default(autoincrement())
+  amenity      String
+  shortName    String?
+  longName     String?
+  locality     String?
+  district     String?
+  place        String?
+  neighborhood String?
+  postcode     String?
+  region       String?
+  country      String?
+  latitude     Float
+  longitude    Float
+  userId       Int?
+  user         User?   @relation(fields: [userId], references: [id])
 }

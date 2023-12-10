@@ -2,6 +2,8 @@ export interface UserLocation {
   shortName?: string;
   longName?: string;
   locality?: string;
+  postcode?: string;
+  neighborhood?: string;
   place?: string;
   district?: string;
   region?: string;
