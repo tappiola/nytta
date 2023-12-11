@@ -3,7 +3,6 @@ import mapboxgl, {
   GeoJSONSource,
   GeolocateControl,
   LngLatLike,
-  Marker,
 } from "mapbox-gl";
 import "./Map.style.css";
 import { Feature, Point } from "geojson";
@@ -12,6 +11,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
 } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
@@ -32,15 +32,10 @@ const Map = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
-  let marker: Marker;
-
-  const setMarker2 = (coords: LngLatLike) => {
-    if (!marker) {
-      marker = new mapboxgl.Marker().setLngLat(coords).addTo(map.current!);
-    } else {
-      marker.setLngLat(coords);
-    }
-  };
+  const marker = useMemo(
+    () => new mapboxgl.Marker({ draggable: true }).setLngLat([0, 0]),
+    [],
+  );
 
   const fetchData = async (latitude: number, longitude: number) => {
     try {
@@ -101,6 +96,8 @@ const Map = ({
       zoom: 11,
     });
 
+    marker.addTo(map.current);
+
     const geoControl = new GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true,
@@ -139,13 +136,13 @@ const Map = ({
       const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
         mapboxgl,
-        marker,
+        marker: false,
         countries: "GB",
       });
       map.current!.addControl(geocoder, "top-left");
 
       map.current!.on("click", (e) => {
-        setMarker2(e.lngLat);
+        marker.setLngLat(e.lngLat);
       });
 
       geocoder.on(
@@ -195,7 +192,7 @@ const Map = ({
         map.current!.getCanvas().style.cursor = "";
       });
     });
-  }, [generateFeature, setUserLocation]);
+  }, [fetchData, generateFeature, marker, setUserLocation]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -213,9 +210,9 @@ const Map = ({
         center: getCoordinates(userLocation),
         zoom: 17,
       });
-      setMarker2(getCoordinates(userLocation));
+      marker.setLngLat(getCoordinates(userLocation));
     }
-  }, [map, setMarker2, userLocation]);
+  }, [map, marker, userLocation]);
 
   useEffect(() => {
     if (!map.current || !map.current.getSource("places")) {

@@ -20,14 +20,14 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
 
   return (
     <>
-      <div className="flex h-screen">
+      <main className="flex h-screen">
         <CategorySelect
           categories={categories}
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
         />
         <Map userLocation={userLocation} setUserLocation={setUserLocation} />
-      </div>
+      </main>
 
       <Button
         type={"button"}

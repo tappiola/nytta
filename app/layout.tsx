@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// import "./globals.css";
+import "./globals.css";
 import "primereact/resources/themes/lara-dark-teal/theme.css";
 import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";

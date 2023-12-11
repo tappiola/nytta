@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { getCategories } from "@/app/lib/actions";
 import { Prisma } from "@prisma/client";
 import { Tree, TreeCheckboxSelectionKeys } from "primereact/tree";
