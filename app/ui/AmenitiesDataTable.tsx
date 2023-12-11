@@ -6,13 +6,13 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { Tag } from "primereact/tag";
-import { getAmenitiesData, getCategories } from "@/app/lib/actions";
+import { getAmenitiesData } from "@/app/lib/actions";
 import { Prisma } from "@prisma/client";
 import { sortBy } from "lodash";
+import Logo from "@/app/ui/Logo";
 
 type Amenities = Prisma.PromiseReturnType<typeof getAmenitiesData>;
 type Amenity = Amenities[number];
-type Categories = Prisma.PromiseReturnType<typeof getCategories>;
 
 type Filter = {
   value: null | string;
@@ -74,7 +74,8 @@ const AmenitiesDataTable = () => {
 
   const renderHeader = () => {
     return (
-      <div className="flex justify-content-end">
+      <div className="flex justify-between">
+        <Logo />
         <span className="p-input-icon-left">
           <i className="pi pi-search" />
           <InputText

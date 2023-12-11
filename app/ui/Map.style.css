@@ -13,6 +13,14 @@
   display: none!important;
 }
 
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+  min-width: 500px;
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl .mapboxgl-ctrl-geocoder--input {
+  height: 46px;
+}
+
 #dynamic-map:before {
   box-shadow: 20px 0 10px -10px rgba(0, 0, 0, 0.15) inset;
   content: "";

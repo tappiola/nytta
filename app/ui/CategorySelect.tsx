@@ -39,6 +39,11 @@ const CategorySelect = ({
       filter
       filterMode="lenient"
       filterPlaceholder="Filter categories"
+      style={{
+        borderRadius: 0,
+        borderBlock: "none",
+        borderInlineStart: "none",
+      }}
     />
   );
 };

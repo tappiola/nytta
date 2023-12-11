@@ -7,6 +7,7 @@ import { create, getCategories } from "@/app/lib/actions";
 import { useState } from "react";
 import { TreeCheckboxSelectionKeys } from "primereact/tree";
 import { UserLocation, UserLocationSaved } from "@/app/ui/types";
+import Logo from "@/app/ui/Logo";
 
 type Categories = Prisma.PromiseReturnType<typeof getCategories>;
 const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
@@ -19,8 +20,17 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
     .map((key) => key);
 
   return (
-    <>
-      <main className="flex h-screen">
+    <div className="h-screen flex-col">
+      <header
+        className="h-16 w-screen p-2 flex"
+        style={{
+          backgroundColor: "#111827",
+          borderBottom: "1px solid #424b57",
+        }}
+      >
+        <Logo />
+      </header>
+      <main className="flex">
         <CategorySelect
           categories={categories}
           selectedCategories={selectedCategories}
@@ -39,7 +49,7 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
       >
         Save
       </Button>
-    </>
+    </div>
   );
 };
 

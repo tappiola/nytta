@@ -11,7 +11,6 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
 } from "react";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
@@ -32,9 +31,10 @@ const Map = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
-  const marker = useMemo(
-    () => new mapboxgl.Marker({ draggable: true }).setLngLat([0, 0]),
-    [],
+  const marker = useRef(
+    new mapboxgl.Marker({ draggable: true, color: "#2dd4bf" }).setLngLat([
+      0, 0,
+    ]),
   );
 
   const fetchData = async (latitude: number, longitude: number) => {
@@ -91,30 +91,12 @@ const Map = ({
     // Create the map
     map.current = new mapboxgl.Map({
       container: mapContainer.current!,
-      style: "mapbox://styles/mapbox/streets-v12?optimize=true",
+      style: "mapbox://styles/tappiola/clq0tewgv01os01o925c538u8",
       center: [-0.1278, 51.5074],
       zoom: 11,
     });
 
-    marker.addTo(map.current);
-
-    const geoControl = new GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      showUserLocation: true,
-    });
-    map.current!.addControl(geoControl, "top-right");
-
-    geoControl.on(
-      "geolocate",
-      // @ts-ignore
-      ({
-        coords: { latitude, longitude },
-      }: {
-        coords: { latitude: number; longitude: number };
-      }) => fetchData(latitude, longitude),
-    );
+    marker.current.addTo(map.current);
 
     map.current.on("load", () => {
       map.current!.addLayer({
@@ -127,10 +109,6 @@ const Map = ({
             features: [generateFeature()],
           },
         },
-        layout: {
-          "icon-image": "lodging-12",
-          "icon-size": 1.5,
-        },
       });
 
       const geocoder = new MapboxGeocoder({
@@ -142,7 +120,8 @@ const Map = ({
       map.current!.addControl(geocoder, "top-left");
 
       map.current!.on("click", (e) => {
-        marker.setLngLat(e.lngLat);
+        geocoder.clear();
+        marker.current.setLngLat(e.lngLat);
       });
 
       geocoder.on(
@@ -166,21 +145,26 @@ const Map = ({
         },
       );
 
-      // When clicking on a map marker
-      map.current!.on("click", "places", ({ features }) => {
-        if (!features) {
-          return;
-        }
-
-        const match = features?.[0] as Feature<Point>;
-        const coordinates = match.geometry.coordinates.slice();
-
-        // Show popup
-        new mapboxgl.Popup()
-          .setLngLat(coordinates as LngLatLike)
-          .setHTML(match.properties?.description)
-          .addTo(map.current!);
+      const geoControl = new GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        showUserLocation: true,
       });
+      map.current!.addControl(geoControl, "top-right");
+
+      geoControl.on(
+        "geolocate",
+        // @ts-ignore
+        ({
+          coords: { latitude, longitude },
+        }: {
+          coords: { latitude: number; longitude: number };
+        }) => {
+          fetchData(latitude, longitude);
+          geocoder.clear();
+        },
+      );
 
       // Change the cursor to a pointer when the mouse is over the places layer.
       map.current!.on("mouseenter", "places", () => {
@@ -192,7 +176,7 @@ const Map = ({
         map.current!.getCanvas().style.cursor = "";
       });
     });
-  }, [fetchData, generateFeature, marker, setUserLocation]);
+  }, [fetchData, generateFeature, setUserLocation]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -210,9 +194,9 @@ const Map = ({
         center: getCoordinates(userLocation),
         zoom: 17,
       });
-      marker.setLngLat(getCoordinates(userLocation));
+      marker.current.setLngLat(getCoordinates(userLocation));
     }
-  }, [map, marker, userLocation]);
+  }, [map, userLocation]);
 
   useEffect(() => {
     if (!map.current || !map.current.getSource("places")) {
