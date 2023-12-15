@@ -15,10 +15,41 @@
 
 .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
   min-width: 500px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mapboxgl-control-container .mapboxgl-ctrl-top-left .mapboxgl-ctrl {
+  margin-block-start: 20px;
+  margin-inline-start: 20px;
+}
+
+.mapboxgl-control-container .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+  margin-block-start: 20px;
+  margin-inline-end: 20px;
 }
 
 .mapboxgl-ctrl-geocoder.mapboxgl-ctrl .mapboxgl-ctrl-geocoder--input {
-  height: 46px;
+  height: auto;
+  background-color: var(--surface-ground);
+  padding: 0.75rem 1.25rem 0.75rem 0.75rem;
+  color: var(--gray-200);
+  border: 1px solid var(--surface-d);
+  border-radius: 0.375rem;
+  font-size: 16px;
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl .mapboxgl-ctrl-geocoder--input:focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 0.2rem rgba(45, 212, 191, 0.2);
+  border-color: var(--primary-500);
+}
+
+.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
+  display: none;
 }
 
 #dynamic-map:before {
@@ -31,13 +62,61 @@
   z-index: 60;
 }
 
-.Map-Price {
-  position: absolute;
-  bottom: 38px;
-  background-color: white;
-  width: min-content;
-  right: 20px;
-  padding: 0 7px;
-  border-radius: 20px;
-  font-weight: 500;
+.mapboxgl-ctrl.mapboxgl-ctrl-group .mapboxgl-ctrl-geolocate {
+  width: auto;
+  background-color: var(--surface-ground);
+  display: flex;
+  border: 1px solid var(--surface-d);
+  padding: 0.5rem 0.75rem;
+  height: auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-group .mapboxgl-ctrl-geolocate:before {
+  content: 'Use my location';
+  display: block;
+  color: var(--gray-400);
+  font-size: 15px;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-group .mapboxgl-ctrl-geolocate .mapboxgl-ctrl-icon {
+  width: 24px;
+  height: 24px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg' fill='%239ca3af'%3E%3Cpath d='M10 4C9 4 9 5 9 5v.1A5 5 0 0 0 5.1 9H5s-1 0-1 1 1 1 1 1h.1A5 5 0 0 0 9 14.9v.1s0 1 1 1 1-1 1-1v-.1a5 5 0 0 0 3.9-3.9h.1s1 0 1-1-1-1-1-1h-.1A5 5 0 0 0 11 5.1V5s0-1-1-1zm0 2.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0-7z'/%3E%3Ccircle id='dot' cx='10' cy='10' r='2'/%3E%3Cpath id='stroke' d='M14 5l1 1-9 9-1-1 9-9z' display='none'/%3E%3C/svg%3E")
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl:before{
+  content: "2";
+  background-color: #94a3b8;
+  border-radius: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--surface-b);
+  font-weight: 700;
+}
+
+/*move to amenities*/
+.p-tree-filter-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.p-tree-filter-container:before {
+  content: "1";
+  background-color: #94a3b8;
+  border-radius: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--surface-b);
+  font-weight: 700;
 }

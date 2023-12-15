@@ -38,7 +38,7 @@ const CategorySelect = ({
       className="w-full md:w-30rem overflow-y-auto"
       filter
       filterMode="lenient"
-      filterPlaceholder="Filter categories"
+      filterPlaceholder="Filter amenities"
       style={{
         borderRadius: 0,
         borderBlock: "none",

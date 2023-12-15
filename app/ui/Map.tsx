@@ -17,6 +17,9 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { UserLocation } from "@/app/ui/types";
+import resolveConfig from "tailwindcss/resolveConfig";
+import myConfig from "@/tailwind.config";
+const tailwindConfig = resolveConfig(myConfig);
 
 const MAPBOX_GL_TOKEN =
   "pk.eyJ1IjoidGFwcGlvbGEiLCJhIjoiY2t6eHhuM2N6MDYyMTJ2cDcxcDVsem8zNiJ9.OByK2fsCvb8XsvT2OYUEjA";
@@ -32,9 +35,10 @@ const Map = ({
   const map = useRef<mapboxgl.Map | null>(null);
 
   const marker = useRef(
-    new mapboxgl.Marker({ draggable: true, color: "#2dd4bf" }).setLngLat([
-      0, 0,
-    ]),
+    new mapboxgl.Marker({
+      draggable: true,
+      color: tailwindConfig.theme.colors.teal["400"],
+    }).setLngLat([0, 0]),
   );
 
   const fetchData = async (latitude: number, longitude: number) => {
@@ -116,6 +120,7 @@ const Map = ({
         mapboxgl,
         marker: false,
         countries: "GB",
+        placeholder: "Find location",
       });
       map.current!.addControl(geocoder, "top-left");
 
@@ -210,7 +215,7 @@ const Map = ({
     });
   }, [generateFeature, map]);
 
-  return <div ref={mapContainer} className="h-screen grow" id="dynamic-map" />;
+  return <div ref={mapContainer} className="h-full grow" id="dynamic-map" />;
 };
 
 export default Map;

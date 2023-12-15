@@ -20,7 +20,7 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
     .map((key) => key);
 
   return (
-    <div className="h-screen flex-col">
+    <div className="h-screen flex flex-col">
       <header
         className="h-16 w-screen p-2 flex"
         style={{
@@ -29,8 +29,19 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
         }}
       >
         <Logo />
+        <div className="text-gray-400 text-sm text-center flex flex-col grow justify-center">
+          <p className="m-0">
+            Dream of fresh hot croissants you can buy daily just round the
+            corner? Or wish you didn&#39;t need to travel to city center every
+            you need a barbershop?
+          </p>
+          <p className="m-0">
+            Let businesses know what amenities you are missing in your local
+            area! You can select up to 7, pick the most desired ones.
+          </p>
+        </div>
       </header>
-      <main className="flex">
+      <main className="flex grow overflow-y-auto">
         <CategorySelect
           categories={categories}
           selectedCategories={selectedCategories}
@@ -42,7 +53,7 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
       <Button
         type={"button"}
         className="fixed"
-        style={{ bottom: "16px", right: "16px" }}
+        style={{ top: "9px", right: "16px" }}
         onClick={async () =>
           await create(categoriesKeys, userLocation as UserLocationSaved)
         }
