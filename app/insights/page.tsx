@@ -1,8 +1,8 @@
 import AmenitiesDataTable from "@/app/ui/AmenitiesDataTable";
-import { getCategories } from "@/app/lib/actions";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 const Insights = async () => {
   return <AmenitiesDataTable />;
 };
 
-export default Insights;
+export default withPageAuthRequired(Insights, { returnTo: "/insights" });

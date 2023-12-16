@@ -8,6 +8,7 @@ import { useState } from "react";
 import { TreeCheckboxSelectionKeys } from "primereact/tree";
 import { UserLocation, UserLocationSaved } from "@/app/ui/types";
 import Logo from "@/app/ui/Logo";
+import User from "@/app/ui/User";
 
 type Categories = Prisma.PromiseReturnType<typeof getCategories>;
 const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
@@ -22,7 +23,7 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   return (
     <div className="h-screen flex flex-col">
       <header
-        className="h-16 w-screen p-2 flex"
+        className="h-16 w-screen p-2 flex gap-3 items-center"
         style={{
           backgroundColor: "#111827",
           borderBottom: "1px solid #424b57",
@@ -40,6 +41,15 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
             area! You can select up to 7, pick the most desired ones.
           </p>
         </div>
+        <Button
+          type="button"
+          onClick={async () =>
+            await create(categoriesKeys, userLocation as UserLocationSaved)
+          }
+        >
+          Save
+        </Button>
+        <User />
       </header>
       <main className="flex grow overflow-y-auto">
         <CategorySelect
@@ -49,17 +59,6 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
         />
         <Map userLocation={userLocation} setUserLocation={setUserLocation} />
       </main>
-
-      <Button
-        type={"button"}
-        className="fixed"
-        style={{ top: "9px", right: "16px" }}
-        onClick={async () =>
-          await create(categoriesKeys, userLocation as UserLocationSaved)
-        }
-      >
-        Save
-      </Button>
     </div>
   );
 };
