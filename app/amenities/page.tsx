@@ -1,4 +1,4 @@
-import { getCategories } from "@/app/lib/actions";
+import { getCategories, getUserAmenities } from "@/app/lib/actions";
 import AmenitiesPicker from "@/app/ui/AmenitiesPicker";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 

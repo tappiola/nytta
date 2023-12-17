@@ -24,10 +24,25 @@ export const getCategories = async () => {
   });
 };
 
+export const getUserAmenities = async (userId: string) => {
+  return prisma.userChoice.findMany({
+    where: {
+      userId,
+    },
+  });
+};
+
 export const getAmenitiesData = async () => {
   const amenitiesPromise = prisma.userChoice.findMany({
-    include: {
-      user: false,
+    select: {
+      amenity: true,
+      locality: true,
+      district: true,
+      place: true,
+      neighborhood: true,
+      postcode: true,
+      latitude: true,
+      longitude: true,
     },
     orderBy: {
       district: "asc",
@@ -53,9 +68,9 @@ export const getAmenitiesData = async () => {
 export const create = async (
   categories: string[],
   userLocation: UserLocationSaved,
+  userId: string,
 ) => {
   console.log({ categories, userLocation });
-  const userId = 1;
 
   const {
     shortName,
@@ -88,6 +103,11 @@ export const create = async (
   }));
 
   try {
+    await prisma.userChoice.deleteMany({
+      where: {
+        userId,
+      },
+    });
     await prisma.userChoice.createMany({ data: amenitiesToCreate });
     console.log(`Amenities created successfully`);
   } catch (error) {

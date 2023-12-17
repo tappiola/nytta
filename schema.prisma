@@ -31,12 +31,6 @@ model SubCategory {
   parentCategoryId Int
 }
 
-model User {
-  id      Int          @id @default(autoincrement())
-  name    String
-  choices UserChoice[]
-}
-
 model UserChoice {
   id           Int     @id @default(autoincrement())
   amenity      String
@@ -51,6 +45,5 @@ model UserChoice {
   country      String?
   latitude     Float
   longitude    Float
-  userId       Int?
-  user         User?   @relation(fields: [userId], references: [id])
+  userId       String
 }

@@ -1,0 +1,4 @@
+.header {
+    background-color: var(--surface-b);
+    border-bottom: 1px solid var(--surface-d);
+}

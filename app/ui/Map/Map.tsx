@@ -4,7 +4,6 @@ import mapboxgl, {
   GeolocateControl,
   LngLatLike,
 } from "mapbox-gl";
-import "./Map.style.css";
 import { Feature, Point } from "geojson";
 import React, {
   Dispatch,
@@ -19,6 +18,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { UserLocation } from "@/app/ui/types";
 import resolveConfig from "tailwindcss/resolveConfig";
 import myConfig from "@/tailwind.config";
+import "./Map.module.css";
+
 const tailwindConfig = resolveConfig(myConfig);
 
 const MAPBOX_GL_TOKEN =

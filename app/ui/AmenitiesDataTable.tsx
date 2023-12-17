@@ -9,7 +9,7 @@ import { Tag } from "primereact/tag";
 import { getAmenitiesData } from "@/app/lib/actions";
 import { Prisma } from "@prisma/client";
 import { sortBy } from "lodash";
-import Logo from "@/app/ui/Logo";
+import Header from "@/app/ui/Header";
 
 type Amenities = Prisma.PromiseReturnType<typeof getAmenitiesData>;
 type Amenity = Amenities[number];
@@ -74,9 +74,8 @@ const AmenitiesDataTable = () => {
 
   const renderHeader = () => {
     return (
-      <div className="flex justify-between">
-        <Logo />
-        <span className="p-input-icon-left">
+      <Header>
+        <span className="p-input-icon-left ms-auto me-0">
           <i className="pi pi-search" />
           <InputText
             value={globalFilterValue}
@@ -84,7 +83,7 @@ const AmenitiesDataTable = () => {
             placeholder="Keyword Search"
           />
         </span>
-      </div>
+      </Header>
     );
   };
   const amenityBodyTemplate = (rowData: Amenity) => {
@@ -116,6 +115,7 @@ const AmenitiesDataTable = () => {
 
   return (
     <div className="card">
+      {renderHeader()}
       <DataTable
         value={amenities}
         paginator
@@ -124,7 +124,6 @@ const AmenitiesDataTable = () => {
         dataKey="id"
         filters={filters}
         loading={false}
-        header={renderHeader()}
         emptyMessage="No data found."
         globalFilterFields={["postcode", "locality", "neighborhood"]}
         sortMode="multiple"
