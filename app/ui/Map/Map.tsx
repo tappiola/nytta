@@ -18,7 +18,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { UserLocation } from "@/app/ui/types";
 import resolveConfig from "tailwindcss/resolveConfig";
 import myConfig from "@/tailwind.config";
-import "./Map.module.css";
+import "./Map.styles.css";
 
 const tailwindConfig = resolveConfig(myConfig);
 

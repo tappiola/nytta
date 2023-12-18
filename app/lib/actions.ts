@@ -1,4 +1,5 @@
 "use server";
+import { TreeCheckboxSelectionKeys } from "primereact/tree";
 import prisma from "../lib/prisma";
 import { UserLocationSaved } from "@/app/ui/types";
 
@@ -66,11 +67,13 @@ export const getAmenitiesData = async () => {
 };
 
 export const create = async (
-  categories: string[],
+  categories: TreeCheckboxSelectionKeys,
   userLocation: UserLocationSaved,
   userId: string,
 ) => {
-  console.log({ categories, userLocation });
+  const categoriesKeys = Object.keys(categories)
+    .filter((key) => categories[key].checked)
+    .map((key) => key);
 
   const {
     shortName,
@@ -86,7 +89,7 @@ export const create = async (
     latitude,
   } = userLocation;
 
-  const amenitiesToCreate = categories.map((amenity) => ({
+  const amenitiesToCreate = Object.keys(categories).map((amenity) => ({
     latitude,
     longitude,
     shortName,
@@ -100,6 +103,7 @@ export const create = async (
     country,
     amenity,
     userId,
+    partiallySelected: categories[amenity].partialChecked,
   }));
 
   try {

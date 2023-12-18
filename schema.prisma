@@ -31,19 +31,26 @@ model SubCategory {
   parentCategoryId Int
 }
 
+model Amenity {
+  id       Int    @id @default(autoincrement())
+  name     String
+  parentId Int?
+}
+
 model UserChoice {
-  id           Int     @id @default(autoincrement())
-  amenity      String
-  shortName    String?
-  longName     String?
-  locality     String?
-  district     String?
-  place        String?
-  neighborhood String?
-  postcode     String?
-  region       String?
-  country      String?
-  latitude     Float
-  longitude    Float
-  userId       String
+  id                Int     @id @default(autoincrement())
+  amenity           String
+  shortName         String?
+  longName          String?
+  locality          String?
+  district          String?
+  place             String?
+  neighborhood      String?
+  postcode          String?
+  region            String?
+  country           String?
+  latitude          Float
+  longitude         Float
+  userId            String
+  partiallySelected Boolean @default(false)
 }

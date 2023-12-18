@@ -17,13 +17,20 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const [userLocation, setUserLocation] = useState<UserLocation>({});
   const { user: { sub } = {} } = useUser();
 
+  console.log(selectedCategories);
+
   useEffect(() => {
     const loadAmenities = async () => {
       const t = await getUserAmenities(sub!);
-      console.log(t);
       setSelectedCategories(
         t.reduce(
-          (prev, next) => ({ ...prev, [next.amenity]: { checked: true } }),
+          (prev, { amenity, partiallySelected }) => ({
+            ...prev,
+            [amenity]: {
+              checked: !partiallySelected,
+              partialChecked: partiallySelected,
+            },
+          }),
           {},
         ),
       );
@@ -33,8 +40,6 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
       loadAmenities();
     }
   }, [sub]);
-
-  console.log(selectedCategories);
 
   const categoriesKeys = Object.keys(selectedCategories)
     .filter((key) => selectedCategories[key].checked)
@@ -89,7 +94,7 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
           type="button"
           onClick={async () =>
             await create(
-              categoriesKeys,
+              selectedCategories,
               userLocation as UserLocationSaved,
               sub!,
             )
