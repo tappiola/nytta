@@ -9,7 +9,7 @@ import { Tag } from "primereact/tag";
 
 import { sortBy } from "lodash";
 import Header from "@/app/ui/Header";
-import { Amenity, Category } from "@/app/ui/types";
+import { Amenity, AmenityCategory, Category } from "@/app/ui/types";
 
 type Filter = {
   value: null | string;
@@ -36,7 +36,7 @@ const AmenitiesDataTable = ({
   });
   const [globalFilterValue, setGlobalFilterValue] = useState("");
 
-  const getSeverity = (amenity: Category) => {
+  const getSeverity = (amenity: AmenityCategory) => {
     const { id, parentId } = amenity;
     if (id === 60) {
       return "danger";

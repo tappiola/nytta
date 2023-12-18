@@ -188,16 +188,6 @@ const Map = ({
     });
   }, [getUserLocationDetails, generateFeature, setUserLocation]);
 
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       ({ coords: { longitude, latitude } }) => {
-  //         setUserLocation({ longitude, latitude });
-  //       },
-  //     );
-  //   }
-  // }, [setUserLocation]);
-
   useEffect(() => {
     if (map.current && userLocation.latitude && userLocation.longitude) {
       map.current.flyTo({

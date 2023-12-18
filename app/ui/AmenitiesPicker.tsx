@@ -3,13 +3,14 @@ import CategorySelect from "@/app/ui/CategorySelect";
 import Map from "@/app/ui/Map/Map";
 import { Button } from "primereact/button";
 import { create, getUserAmenities } from "@/app/lib/actions";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TreeCheckboxSelectionKeys } from "primereact/tree";
 import { Categories, UserLocation, UserLocationSaved } from "@/app/ui/types";
 import Header from "@/app/ui/Header";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { isEqual } from "lodash";
 import { removeNullUndefined } from "@/app/lib/util";
+import { Toast } from "primereact/toast";
 
 const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const [selectedCategories, setSelectedCategories] =
@@ -19,6 +20,7 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const [userLocation, setUserLocation] = useState<UserLocation>({});
   const [prevLocation, setPrevLocation] = useState<UserLocation>({});
   const { user: { sub } = {} } = useUser();
+  const toastRef = useRef<Toast>(null);
 
   useEffect(() => {
     const loadAmenities = async () => {
@@ -90,8 +92,22 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
     .filter(({ id }) => categoriesKeys.includes(id.toString()))
     .map(({ name }) => name);
 
+  const showMessage = (severity: "success" | "error") => {
+    const labels = {
+      success: "Amenities saved successfully",
+      error: "Failed to save amenities",
+    };
+
+    toastRef.current!.show({
+      severity,
+      summary: labels[severity],
+      life: 2000,
+    });
+  };
+
   return (
     <div className="h-screen flex flex-col">
+      <Toast ref={toastRef} position="bottom-right" />
       <Header>
         <div className="text-gray-400 text-sm text-center flex flex-col grow justify-center">
           {names.length ? (
@@ -125,13 +141,14 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
                 [userLocation.latitude, userLocation.longitude],
               ))
           }
-          onClick={async () =>
-            await create(
+          onClick={async () => {
+            const { status } = await create(
               selectedCategories,
               userLocation as UserLocationSaved,
               sub!,
-            )
-          }
+            );
+            showMessage(status);
+          }}
         >
           Save
         </Button>
@@ -143,6 +160,11 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
           setSelectedCategories={setSelectedCategories}
         />
         <Map userLocation={userLocation} setUserLocation={setUserLocation} />
+        {/*<Message*/}
+        {/*  severity="warn"*/}
+        {/*  text="Please, select no more than 7 amenities"*/}
+        {/*  className="fixed bottom-4 end-4"*/}
+        {/*/>*/}
       </main>
     </div>
   );

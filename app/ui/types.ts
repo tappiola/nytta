@@ -22,5 +22,13 @@ export interface UserLocationSaved extends UserLocation {
 export type Categories = Prisma.PromiseReturnType<typeof getCategories>;
 export type Category = Categories[number];
 
+export type AmenityCategory = {
+  name: string;
+  id: number;
+  parentId: number | null;
+};
+
 export type Amenities = Prisma.PromiseReturnType<typeof getAmenitiesData>;
-export type Amenity = Amenities[number] & { amenity: Category };
+export type Amenity = Amenities[number] & {
+  amenity: AmenityCategory;
+};

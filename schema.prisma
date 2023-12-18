@@ -10,27 +10,6 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-model TopCategory {
-  id         Int        @id @default(autoincrement())
-  name       String
-  categories Category[]
-}
-
-model Category {
-  id            Int           @id @default(autoincrement())
-  name          String
-  topCategoryId Int
-  TopCategory   TopCategory   @relation(fields: [topCategoryId], references: [id])
-  SubCategory   SubCategory[]
-}
-
-model SubCategory {
-  id               Int      @id @default(autoincrement())
-  name             String
-  parentCategory   Category @relation(fields: [parentCategoryId], references: [id])
-  parentCategoryId Int
-}
-
 model Amenity {
   id         Int          @id @default(autoincrement())
   name       String

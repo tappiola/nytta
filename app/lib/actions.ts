@@ -38,6 +38,7 @@ export const getUserAmenities = async (userId: string) => {
 export const getAmenitiesData = async () => {
   return prisma.userChoice.findMany({
     select: {
+      id: true,
       amenity: true,
       locality: true,
       district: true,
@@ -60,7 +61,7 @@ export const create = async (
   categories: TreeCheckboxSelectionKeys,
   userLocation: UserLocationSaved,
   userId: string,
-) => {
+): Promise<{ status: "success" | "error" }> => {
   const {
     shortName,
     longName,
@@ -101,7 +102,9 @@ export const create = async (
     await prisma.userChoice.createMany({ data: amenitiesToCreate });
     revalidatePath("/insights");
     console.log(`Amenities created successfully`);
+    return { status: "success" };
   } catch (error) {
     console.error(`Error creating amenities:`, error);
+    return { status: "error" };
   }
 };
