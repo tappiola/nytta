@@ -95,7 +95,10 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
       <Header>
         <div className="text-gray-400 text-sm text-center flex flex-col grow justify-center">
           {names.length ? (
-            `${names.length} amenities selected: ${names.join(", ")}.`
+            <p className="two-lines text-gray-200">
+              <strong>{names.length} amenities selected:</strong>{" "}
+              {names.join(", ")}.
+            </p>
           ) : (
             <>
               <p className="m-0">

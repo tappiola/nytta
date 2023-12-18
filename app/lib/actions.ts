@@ -2,6 +2,7 @@
 import { TreeCheckboxSelectionKeys } from "primereact/tree";
 import prisma from "../lib/prisma";
 import { UserLocationSaved } from "@/app/ui/types";
+import { revalidatePath } from "next/cache";
 
 export const getCategories = async () => {
   const amenities = await prisma.amenity.findMany({
@@ -98,6 +99,7 @@ export const create = async (
       },
     });
     await prisma.userChoice.createMany({ data: amenitiesToCreate });
+    revalidatePath("/insights");
     console.log(`Amenities created successfully`);
   } catch (error) {
     console.error(`Error creating amenities:`, error);

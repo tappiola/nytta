@@ -42,7 +42,10 @@ const Map = ({
     }).setLngLat([0, 0]),
   );
 
-  const fetchData = async (latitude: number, longitude: number) => {
+  const getUserLocationDetails = async (
+    latitude: number,
+    longitude: number,
+  ) => {
     try {
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
@@ -124,9 +127,11 @@ const Map = ({
       });
       map.current!.addControl(geocoder, "top-left");
 
-      map.current!.on("click", (e) => {
+      map.current!.on("click", ({ lngLat, lngLat: { lng, lat } }) => {
         geocoder.clear();
-        marker.current.setLngLat(e.lngLat);
+        marker.current.setLngLat(lngLat);
+        setUserLocation({ longitude: lng, latitude: lat });
+        getUserLocationDetails(lat, lng);
       });
 
       geocoder.on(
@@ -146,7 +151,7 @@ const Map = ({
             latitude: coordinates[1],
             longitude: coordinates[0],
           });
-          fetchData(coordinates[1], coordinates[0]);
+          getUserLocationDetails(coordinates[1], coordinates[0]);
         },
       );
 
@@ -166,7 +171,7 @@ const Map = ({
         }: {
           coords: { latitude: number; longitude: number };
         }) => {
-          fetchData(latitude, longitude);
+          getUserLocationDetails(latitude, longitude);
           geocoder.clear();
         },
       );
@@ -181,7 +186,7 @@ const Map = ({
         map.current!.getCanvas().style.cursor = "";
       });
     });
-  }, [fetchData, generateFeature, setUserLocation]);
+  }, [getUserLocationDetails, generateFeature, setUserLocation]);
 
   // useEffect(() => {
   //   if (navigator.geolocation) {

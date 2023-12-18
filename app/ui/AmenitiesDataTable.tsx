@@ -129,7 +129,7 @@ const AmenitiesDataTable = ({
           field="amenity.name"
           header="Amentity"
           filter
-          filterPlaceholder="Search by amenity"
+          filterPlaceholder="Any"
           style={{ minWidth: "12rem", maxWidth: "24rem" }}
           filterElement={amenityRowFilterTemplate}
           body={amenityBodyTemplate}
@@ -139,7 +139,7 @@ const AmenitiesDataTable = ({
           field="postcode"
           header="Postcode"
           filter
-          filterPlaceholder="Search by postcode"
+          filterPlaceholder="Any"
           style={{ minWidth: "12rem" }}
           sortable
         />
@@ -147,7 +147,7 @@ const AmenitiesDataTable = ({
           field="neighborhood"
           header="Neighborhood"
           filter
-          filterPlaceholder="Search by neighborhood"
+          filterPlaceholder="Any"
           style={{ minWidth: "12rem" }}
           sortable
         />
@@ -155,7 +155,7 @@ const AmenitiesDataTable = ({
           field="locality"
           header="Borough"
           filter
-          filterPlaceholder="Search by borough"
+          filterPlaceholder="Any"
           style={{ minWidth: "12rem" }}
           sortable
         />
@@ -163,7 +163,7 @@ const AmenitiesDataTable = ({
           field="place"
           header="City"
           filter
-          filterPlaceholder="Search by city"
+          filterPlaceholder="Any"
           style={{ minWidth: "12rem" }}
           sortable
         />
@@ -171,7 +171,7 @@ const AmenitiesDataTable = ({
           field="district"
           header="Region"
           filter
-          filterPlaceholder="Search by region"
+          filterPlaceholder="Any"
           style={{ minWidth: "12rem" }}
           sortable
         />
