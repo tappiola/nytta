@@ -1,18 +1,15 @@
 "use client";
-import React, { useState, useEffect, ChangeEventHandler } from "react";
+import React, { useState, ChangeEventHandler } from "react";
 import { FilterMatchMode } from "primereact/api";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { Tag } from "primereact/tag";
-import { getAmenitiesData } from "@/app/lib/actions";
-import { Prisma } from "@prisma/client";
+
 import { sortBy } from "lodash";
 import Header from "@/app/ui/Header";
-
-type Amenities = Prisma.PromiseReturnType<typeof getAmenitiesData>;
-type Amenity = Amenities[number];
+import { Amenity, Category } from "@/app/ui/types";
 
 type Filter = {
   value: null | string;
@@ -23,20 +20,14 @@ type FilterObject = {
   [key: string]: Filter;
 };
 
-const AmenitiesDataTable = () => {
-  const [amenities, setAmenities] = useState<Amenities>([]);
-  useEffect(() => {
-    const loadData = async () => {
-      const data = await getAmenitiesData();
-      setAmenities(data);
-    };
-
-    loadData();
-  }, []);
-
+const AmenitiesDataTable = ({
+  savedAmenities,
+}: {
+  savedAmenities: Amenity[];
+}) => {
   const [filters, setFilters] = useState<FilterObject>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    amenityName: { value: null, matchMode: FilterMatchMode.IN },
+    "amenity.name": { value: null, matchMode: FilterMatchMode.IN },
     postcode: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     locality: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     neighborhood: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -45,22 +36,23 @@ const AmenitiesDataTable = () => {
   });
   const [globalFilterValue, setGlobalFilterValue] = useState("");
 
-  const getSeverity = (status: string) => {
-    const [topLevelCategory, secondLevelCategory] = status.split("-");
-    if (topLevelCategory === "1" && secondLevelCategory === "6") {
+  const getSeverity = (amenity: Category) => {
+    const { id, parentId } = amenity;
+    if (id === 60) {
       return "danger";
     }
-    switch (topLevelCategory) {
-      case "2":
+
+    switch (parentId) {
+      case 2:
         return "success";
 
-      case "3":
+      case 3:
         return "info";
 
-      case "4":
+      case 4:
         return "warning";
 
-      case "1":
+      case 1:
         return null;
     }
   };
@@ -89,7 +81,7 @@ const AmenitiesDataTable = () => {
   const amenityBodyTemplate = (rowData: Amenity) => {
     return (
       <Tag
-        value={rowData.amenityName}
+        value={rowData.amenity.name}
         severity={getSeverity(rowData.amenity)}
       />
     );
@@ -103,9 +95,14 @@ const AmenitiesDataTable = () => {
       <MultiSelect
         value={options.value}
         options={sortBy(
-          Array.from(new Set(amenities.map(({ amenityName }) => amenityName))),
+          Array.from(
+            new Set(savedAmenities.map(({ amenity: { name } }) => name)),
+          ),
         )}
-        onChange={(e) => options.filterApplyCallback(e.value)}
+        onChange={(e) => {
+          console.log(e);
+          options.filterApplyCallback(e.value);
+        }}
         placeholder="Any"
         className="p-column-filter"
         style={{ minWidth: "14rem" }}
@@ -117,7 +114,7 @@ const AmenitiesDataTable = () => {
     <div className="card">
       {renderHeader()}
       <DataTable
-        value={amenities}
+        value={savedAmenities}
         paginator
         rows={10}
         filterDisplay="row"
@@ -129,7 +126,7 @@ const AmenitiesDataTable = () => {
         sortMode="multiple"
       >
         <Column
-          field="amenityName"
+          field="amenity.name"
           header="Amentity"
           filter
           filterPlaceholder="Search by amenity"

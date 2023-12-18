@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import { getCategories } from "@/app/lib/actions";
 import { Prisma } from "@prisma/client";
 import { Tree, TreeCheckboxSelectionKeys } from "primereact/tree";
+import { createTree } from "@/app/lib/util";
 
 type Categories = Prisma.PromiseReturnType<typeof getCategories>;
 const CategorySelect = ({
@@ -14,22 +15,11 @@ const CategorySelect = ({
   selectedCategories: TreeCheckboxSelectionKeys;
   setSelectedCategories: Dispatch<SetStateAction<TreeCheckboxSelectionKeys>>;
 }) => {
-  const d3 = categories.map((c) => ({
-    key: c.id,
-    label: c.name,
-    children: c.categories.map((item) => ({
-      key: `${c.id}-${item.id}`,
-      label: item.name,
-      children: item.SubCategory.map((sub) => ({
-        key: `${c.id}-${item.id}-${sub.id}`,
-        label: sub.name,
-      })),
-    })),
-  }));
+  const data = createTree(categories);
 
   return (
     <Tree
-      value={d3}
+      value={data}
       selectionMode="checkbox"
       selectionKeys={selectedCategories}
       onSelectionChange={(e) =>

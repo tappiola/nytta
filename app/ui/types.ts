@@ -1,3 +1,6 @@
+import { Prisma } from "@prisma/client";
+import { getAmenitiesData, getCategories } from "@/app/lib/actions";
+
 export interface UserLocation {
   shortName?: string;
   longName?: string;
@@ -16,3 +19,8 @@ export interface UserLocationSaved extends UserLocation {
   latitude: number;
   longitude: number;
 }
+export type Categories = Prisma.PromiseReturnType<typeof getCategories>;
+export type Category = Categories[number];
+
+export type Amenities = Prisma.PromiseReturnType<typeof getAmenitiesData>;
+export type Amenity = Amenities[number] & { amenity: Category };

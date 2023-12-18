@@ -93,7 +93,6 @@ const Map = ({
     mapboxgl.accessToken = MAPBOX_GL_TOKEN;
     if (map.current) return;
 
-    // Create the map
     map.current = new mapboxgl.Map({
       container: mapContainer.current!,
       style: "mapbox://styles/tappiola/clq0tewgv01os01o925c538u8",
@@ -184,15 +183,15 @@ const Map = ({
     });
   }, [fetchData, generateFeature, setUserLocation]);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        ({ coords: { longitude, latitude } }) => {
-          setUserLocation({ longitude, latitude });
-        },
-      );
-    }
-  }, [setUserLocation]);
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       ({ coords: { longitude, latitude } }) => {
+  //         setUserLocation({ longitude, latitude });
+  //       },
+  //     );
+  //   }
+  // }, [setUserLocation]);
 
   useEffect(() => {
     if (map.current && userLocation.latitude && userLocation.longitude) {

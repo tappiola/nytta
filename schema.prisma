@@ -32,14 +32,14 @@ model SubCategory {
 }
 
 model Amenity {
-  id       Int    @id @default(autoincrement())
-  name     String
-  parentId Int?
+  id         Int          @id @default(autoincrement())
+  name       String
+  parentId   Int?
+  UserChoice UserChoice[]
 }
 
 model UserChoice {
   id                Int     @id @default(autoincrement())
-  amenity           String
   shortName         String?
   longName          String?
   locality          String?
@@ -53,4 +53,6 @@ model UserChoice {
   longitude         Float
   userId            String
   partiallySelected Boolean @default(false)
+  amenity           Amenity @relation(fields: [amenityId], references: [id])
+  amenityId         Int
 }

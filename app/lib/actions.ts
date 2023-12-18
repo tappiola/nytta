@@ -4,25 +4,26 @@ import prisma from "../lib/prisma";
 import { UserLocationSaved } from "@/app/ui/types";
 
 export const getCategories = async () => {
-  return prisma.topCategory.findMany({
-    include: {
-      categories: {
-        include: {
-          SubCategory: {
-            orderBy: {
-              name: "asc",
-            },
-          },
-        },
-        orderBy: {
-          name: "asc",
-        },
-      },
-    },
+  const amenities = await prisma.amenity.findMany({
     orderBy: {
       name: "asc",
     },
   });
+
+  return Promise.all(
+    amenities.map(async (amenity) => {
+      const childrenCount = await prisma.amenity.count({
+        where: {
+          parentId: amenity.id,
+        },
+      });
+
+      return {
+        ...amenity,
+        childrenCount,
+      };
+    }),
+  );
 };
 
 export const getUserAmenities = async (userId: string) => {
@@ -34,7 +35,7 @@ export const getUserAmenities = async (userId: string) => {
 };
 
 export const getAmenitiesData = async () => {
-  const amenitiesPromise = prisma.userChoice.findMany({
+  return prisma.userChoice.findMany({
     select: {
       amenity: true,
       locality: true,
@@ -45,25 +46,13 @@ export const getAmenitiesData = async () => {
       latitude: true,
       longitude: true,
     },
+    where: {
+      partiallySelected: false,
+    },
     orderBy: {
       district: "asc",
     },
   });
-
-  const categoriesPromise = prisma.category.findMany();
-  const subcategoriesPromise = prisma.subCategory.findMany();
-  const [categories, subcategories, amenities] = await Promise.all([
-    categoriesPromise,
-    subcategoriesPromise,
-    amenitiesPromise,
-  ]);
-
-  return amenities.map((d) => ({
-    ...d,
-    amenityName: /^\d+-\d+$/.test(d.amenity)
-      ? categories.find((c) => d.amenity.endsWith("-" + c.id.toString()))!.name
-      : subcategories.find((c) => d.amenity.endsWith(c.id.toString()))!.name,
-  }));
 };
 
 export const create = async (
@@ -71,10 +60,6 @@ export const create = async (
   userLocation: UserLocationSaved,
   userId: string,
 ) => {
-  const categoriesKeys = Object.keys(categories)
-    .filter((key) => categories[key].checked)
-    .map((key) => key);
-
   const {
     shortName,
     longName,
@@ -101,7 +86,7 @@ export const create = async (
     district,
     region,
     country,
-    amenity,
+    amenityId: +amenity,
     userId,
     partiallySelected: categories[amenity].partialChecked,
   }));

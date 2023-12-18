@@ -2,38 +2,75 @@
 import CategorySelect from "@/app/ui/CategorySelect";
 import Map from "@/app/ui/Map/Map";
 import { Button } from "primereact/button";
-import { Prisma } from "@prisma/client";
-import { create, getCategories, getUserAmenities } from "@/app/lib/actions";
+import { create, getUserAmenities } from "@/app/lib/actions";
 import { useEffect, useState } from "react";
 import { TreeCheckboxSelectionKeys } from "primereact/tree";
-import { UserLocation, UserLocationSaved } from "@/app/ui/types";
+import { Categories, UserLocation, UserLocationSaved } from "@/app/ui/types";
 import Header from "@/app/ui/Header";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { isEqual } from "lodash";
+import { removeNullUndefined } from "@/app/lib/util";
 
-type Categories = Prisma.PromiseReturnType<typeof getCategories>;
 const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const [selectedCategories, setSelectedCategories] =
     useState<TreeCheckboxSelectionKeys>({});
+  const [savedCategories, setSavedCategories] =
+    useState<TreeCheckboxSelectionKeys>({});
   const [userLocation, setUserLocation] = useState<UserLocation>({});
+  const [prevLocation, setPrevLocation] = useState<UserLocation>({});
   const { user: { sub } = {} } = useUser();
-
-  console.log(selectedCategories);
 
   useEffect(() => {
     const loadAmenities = async () => {
-      const t = await getUserAmenities(sub!);
-      setSelectedCategories(
-        t.reduce(
-          (prev, { amenity, partiallySelected }) => ({
-            ...prev,
-            [amenity]: {
-              checked: !partiallySelected,
-              partialChecked: partiallySelected,
-            },
-          }),
-          {},
-        ),
+      const userAmenities = await getUserAmenities(sub!);
+
+      if (!userAmenities.length) {
+        return;
+      }
+
+      const prevAmenities = userAmenities.reduce(
+        (prev, { amenityId, partiallySelected }) => ({
+          ...prev,
+          [amenityId]: {
+            checked: !partiallySelected,
+            partialChecked: partiallySelected,
+          },
+        }),
+        {},
       );
+      setSelectedCategories(prevAmenities);
+      setSavedCategories(prevAmenities);
+
+      const {
+        shortName,
+        region,
+        postcode,
+        place,
+        neighborhood,
+        longitude,
+        longName,
+        locality,
+        latitude,
+        district,
+        country,
+      } = removeNullUndefined(userAmenities[0]);
+
+      const location = {
+        shortName,
+        region,
+        postcode,
+        place,
+        neighborhood,
+        longitude,
+        longName,
+        locality,
+        latitude,
+        district,
+        country,
+      } as UserLocation;
+
+      setUserLocation(location);
+      setPrevLocation(location);
     };
 
     if (sub) {
@@ -42,33 +79,16 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   }, [sub]);
 
   const categoriesKeys = Object.keys(selectedCategories)
-    .filter((key) => selectedCategories[key].checked)
+    .filter(
+      (key) =>
+        selectedCategories[key].checked &&
+        categories.find(({ id }) => id === +key)?.childrenCount === 0,
+    )
     .map((key) => key);
 
-  // TODO refactor
-  const d3 = categories.reduce(
-    (prev, c) => ({
-      ...prev,
-      [c.id]: c.name,
-      ...c.categories.reduce(
-        (prev, item) => ({
-          ...prev,
-          [`${c.id}-${item.id}`]: item.name,
-          ...item.SubCategory.reduce(
-            (prev, sub) => ({
-              ...prev,
-              [`${c.id}-${item.id}-${sub.id}`]: sub.name,
-            }),
-            {},
-          ),
-        }),
-        {},
-      ),
-    }),
-    {},
-  );
-
-  const names = categoriesKeys.map((key) => d3[key as keyof typeof d3]);
+  const names = categories
+    .filter(({ id }) => categoriesKeys.includes(id.toString()))
+    .map(({ name }) => name);
 
   return (
     <div className="h-screen flex flex-col">
@@ -92,6 +112,16 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
         </div>
         <Button
           type="button"
+          disabled={
+            !Object.keys(selectedCategories).length ||
+            !userLocation.latitude ||
+            !userLocation.longitude ||
+            (isEqual(savedCategories, selectedCategories) &&
+              isEqual(
+                [prevLocation.latitude, prevLocation.longitude],
+                [userLocation.latitude, userLocation.longitude],
+              ))
+          }
           onClick={async () =>
             await create(
               selectedCategories,
