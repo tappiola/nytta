@@ -9,7 +9,8 @@ import { Tag } from "primereact/tag";
 
 import { sortBy } from "lodash";
 import Header from "@/app/ui/Header";
-import { Amenity, AmenityCategory, Category } from "@/app/ui/types";
+import { Amenity, AmenityCategory, Categories, Category } from "@/app/ui/types";
+import PieChart from "@/app/ui/PieChart";
 
 type Filter = {
   value: null | string;
@@ -22,8 +23,10 @@ type FilterObject = {
 
 const AmenitiesDataTable = ({
   savedAmenities,
+  categories,
 }: {
   savedAmenities: Amenity[];
+  categories: Categories;
 }) => {
   const [filters, setFilters] = useState<FilterObject>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -113,6 +116,7 @@ const AmenitiesDataTable = ({
   return (
     <div className="card">
       {renderHeader()}
+      <PieChart amenities={savedAmenities} categories={categories} />
       <DataTable
         value={savedAmenities}
         paginator

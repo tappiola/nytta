@@ -3,16 +3,17 @@ import { getCategories } from "@/app/lib/actions";
 
 type Amenities = Prisma.PromiseReturnType<typeof getCategories>;
 
-type A2 = {
+export type TreeNode = {
   name: string;
   id: string;
   parentId: number | null;
   childrenCount: number;
+  children?: TreeNode[];
 };
 export const createTree = (
   items: Amenities,
   parentId: number | null = null,
-): A2[] =>
+): TreeNode[] =>
   items
     .filter((item) => item.parentId === parentId)
     .map((item) => ({
@@ -29,3 +30,16 @@ export const removeNullUndefined = <T extends Record<string, any>>(obj: T): T =>
       ([_, value]) => value !== null && value !== undefined,
     ),
   ) as T;
+
+export const extractIdsFromTree = (node: TreeNode): Number[] => {
+  const ids: Number[] = [+node.id];
+
+  if (node.children && node.children.length > 0) {
+    node.children.forEach((child) => {
+      const childIds = extractIdsFromTree(child);
+      ids.push(...childIds);
+    });
+  }
+
+  return ids;
+};

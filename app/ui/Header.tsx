@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import styles from "./Header.module.css";
-const Header = ({ children }: { children: ReactNode }) => {
+const Header = ({ children }: { children?: ReactNode }) => {
   const { user } = useUser();
 
   return (
