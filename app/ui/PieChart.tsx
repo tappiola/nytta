@@ -4,6 +4,9 @@ import { Chart } from "primereact/chart";
 import { Amenity, Categories } from "@/app/ui/types";
 import { countBy, filter, size } from "lodash";
 import { createTree, extractIdsFromTree, TreeNode } from "@/app/lib/util";
+import { Card } from "primereact/card";
+
+type Dataset = { [key: string]: number };
 
 const PieChart = ({
   amenities,
@@ -13,11 +16,9 @@ const PieChart = ({
   categories: Categories;
 }) => {
   const categoriesTree = createTree(categories);
-  const groupedAmenities = countBy(amenities, "amenity.name");
-  const groupedByParent = countBy(amenities, "amenity.parentId");
-  const datasets = [];
+  const datasets: { name: string; dataset: Dataset }[] = [];
 
-  const getCount = (tree: TreeNode[]) => {
+  const getCount = (name: string, tree: TreeNode[]) => {
     const r = tree.reduce((prev, c) => {
       const ids = extractIdsFromTree(c);
       const newSize = size(
@@ -34,25 +35,24 @@ const PieChart = ({
         : prev;
     }, {});
 
-    if (Object.keys(r).length) {
-      datasets.push(r);
+    if (Object.keys(r).length > 1) {
+      datasets.push({ name, dataset: r });
     }
 
     tree.forEach((c) => {
       if (c.children) {
-        getCount(c.children);
+        getCount(c.name, c.children);
       }
     });
   };
 
-  getCount(categoriesTree);
-  console.log(datasets);
+  getCount("All Categories", categoriesTree);
 
   const chartOptions = {
     cutout: "60%",
   };
 
-  const getchartData = (dataset) => ({
+  const getChartData = (dataset: Dataset) => ({
     labels: Object.keys(dataset),
     datasets: [
       {
@@ -62,14 +62,16 @@ const PieChart = ({
   });
 
   return (
-    <div className="card flex justify-content-center">
-      {datasets.map((d) => (
-        <Chart
-          type="doughnut"
-          data={getchartData(d)}
-          options={chartOptions}
-          className="w-full md:w-30rem"
-        />
+    <div className="card flex flex-wrap gap-3">
+      {datasets.map(({ name, dataset }, i) => (
+        <Card key={i} className="w-3">
+          <h1>{name}</h1>
+          <Chart
+            type="doughnut"
+            data={getChartData(dataset)}
+            options={chartOptions}
+          />
+        </Card>
       ))}
     </div>
   );
