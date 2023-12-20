@@ -2,7 +2,7 @@
 import React from "react";
 import { Chart } from "primereact/chart";
 import { Amenity, Categories } from "@/app/ui/types";
-import { countBy, filter, size } from "lodash";
+import { filter, size } from "lodash";
 import { createTree, extractIdsFromTree, TreeNode } from "@/app/lib/util";
 import { Card } from "primereact/card";
 
