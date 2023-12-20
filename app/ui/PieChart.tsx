@@ -1,7 +1,7 @@
 import React from "react";
 import { Chart } from "primereact/chart";
 import { Card } from "primereact/card";
-import { Dataset } from "@/app/ui/CategoryCharts";
+import { Dataset } from "@/app/insights/geo/page";
 
 const PieChart = ({ name, dataset }: { name: string; dataset: Dataset }) => {
   const chartOptions = {
@@ -18,7 +18,7 @@ const PieChart = ({ name, dataset }: { name: string; dataset: Dataset }) => {
   });
 
   return (
-    <Card className="w-3">
+    <Card>
       <h1>{name}</h1>
       <Chart
         type="doughnut"

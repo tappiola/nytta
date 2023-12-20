@@ -1,18 +1,15 @@
 import React from "react";
-import { Amenity, Categories } from "@/app/ui/types";
 import { filter, size } from "lodash";
 import { createTree, extractIdsFromTree, TreeNode } from "@/app/lib/util";
 import PieChart from "@/app/ui/PieChart";
+import { getAmenitiesData, getCategories } from "@/app/lib/actions";
 
 export type Dataset = { [key: string]: number };
 
-const CategoryCharts = ({
-  amenities,
-  categories,
-}: {
-  amenities: Amenity[];
-  categories: Categories;
-}) => {
+const Page = async () => {
+  const amenities = await getAmenitiesData();
+  const categories = await getCategories();
+
   const categoriesTree = createTree(categories);
   const datasets: { name: string; dataset: Dataset }[] = [];
 
@@ -47,7 +44,7 @@ const CategoryCharts = ({
   getCount("All Categories", categoriesTree);
 
   return (
-    <div className="card flex flex-wrap gap-3">
+    <div className="grid grid-cols-3 gap-3">
       {datasets.map(({ name, dataset }, i) => (
         <PieChart key={i} name={name} dataset={dataset} />
       ))}
@@ -55,4 +52,4 @@ const CategoryCharts = ({
   );
 };
 
-export default CategoryCharts;
+export default Page;

@@ -10,11 +10,8 @@ export const metadata: Metadata = {
 
 const Insights = async () => {
   const amenities = (await getAmenitiesData()) as Amenity[];
-  const categories = await getCategories();
 
-  return (
-    <AmenitiesDataTable savedAmenities={amenities} categories={categories} />
-  );
+  return <AmenitiesDataTable savedAmenities={amenities} />;
 };
 
 export default withPageAuthRequired(Insights, { returnTo: "/insights" });
