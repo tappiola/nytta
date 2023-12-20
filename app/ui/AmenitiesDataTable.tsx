@@ -10,7 +10,8 @@ import { Tag } from "primereact/tag";
 import { sortBy } from "lodash";
 import Header from "@/app/ui/Header";
 import { Amenity, AmenityCategory, Categories, Category } from "@/app/ui/types";
-import PieChart from "@/app/ui/PieChart";
+import CategoryCharts from "@/app/ui/CategoryCharts";
+import GeoCharts from "@/app/ui/GeoCharts";
 
 type Filter = {
   value: null | string;
@@ -116,7 +117,8 @@ const AmenitiesDataTable = ({
   return (
     <div className="card">
       {renderHeader()}
-      <PieChart amenities={savedAmenities} categories={categories} />
+      <CategoryCharts amenities={savedAmenities} categories={categories} />
+      <GeoCharts amenities={savedAmenities} categories={categories} />
       <DataTable
         value={savedAmenities}
         paginator
