@@ -5,6 +5,9 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import Header from "@/app/ui/Header";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
+import Image from "next/image";
+import bakery from "@/public/images/bakery-with-signboard-saying--bakery-.png";
+import chart from "@/public/images/pie---donut-chart-with-statistics.png";
 
 export default function Home() {
   const { user } = useUser();
@@ -19,36 +22,48 @@ export default function Home() {
           </Link>
         )}
       </Header>
-      <section className="flex gap-6 mt-12 justify-content-center">
+      <section className="flex flex-column gap-6 my-12 justify-content-center mx-8">
+        <Link href="/amenities" className="no-underline w-400px basis-4/12">
+          <Card className="py-0">
+            <div className="flex flex-row-reverse items-center gap-10 px-6">
+              <Image src={bakery} alt="" height={400} width={400} />
+              <div>
+                <h1 className="mb-4 text-4xl">Nýtta Amenities</h1>
+                <p className="text-lg">
+                  Dream of fresh hot croissants you can buy daily just round the
+                  corner? Or wish you didn&#39;t need to travel to city center
+                  every you need a barbershop?
+                </p>
+                <p className="text-lg">
+                  Let businesses know what amenities you are missing in your
+                  local area!
+                </p>
+                <Button className="mt-4">Select Amenities</Button>
+              </div>
+            </div>
+          </Card>
+        </Link>
         <Link
           href="/insights/overview"
           className="no-underline w-400px basis-4/12"
         >
           <Card>
-            <p>
-              Want to open a new business, but not sure about location? Willing
-              to open a restaurant, but don&#39;t know what type of cuisine to
-              pick?
-            </p>
-            <p>
-              Welcome to Nýtta Business Insights - market analysis data combined
-              with feedback from real users
-            </p>
-            <Button>View Business Insights</Button>
-          </Card>
-        </Link>
-        <Link href="/amenities" className="no-underline w-400px basis-4/12">
-          <Card>
-            <p>
-              Dream of fresh hot croissants you can buy daily just round the
-              corner? Or wish you didn&#39;t need to travel to city center every
-              you need a barbershop?
-            </p>
-            <p>
-              Let businesses know what amenities you are missing in your local
-              area!
-            </p>
-            <Button>Select Amenities</Button>
+            <div className="flex items-center gap-10 px-6">
+              <Image src={chart} alt="" width={400} />
+              <div>
+                <h1 className="mb-4 text-4xl">Nýtta Business Insights</h1>
+                <p className="text-lg">
+                  Want to open a new business, but not sure about location?
+                  Willing to open a restaurant, but don&#39;t know what type of
+                  cuisine to pick?
+                </p>
+                <p className="text-lg">
+                  Welcome to Nýtta Business Insights - service providing market
+                  analysis data combined with feedback from real users
+                </p>
+                <Button className="mt-4">Explore Business Insights</Button>
+              </div>
+            </div>
           </Card>
         </Link>
       </section>
