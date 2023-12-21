@@ -28,7 +28,7 @@ const CategoryCharts = async () => {
   );
 
   return (
-    <div className="card grid grid-cols-3 gap-3">
+    <div className="card grid grid-cols-3 gap-3 m-3">
       {datasets.map(({ name, dataset }, i) => (
         <PieChart key={i} name={name} dataset={dataset} />
       ))}

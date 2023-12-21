@@ -1,3 +1,4 @@
+"use client";
 import Logo from "@/app/ui/Logo";
 import React, { ReactNode } from "react";
 import Image from "next/image";
@@ -9,7 +10,7 @@ const Header = ({ children }: { children?: ReactNode }) => {
 
   return (
     <header
-      className={`h-16 w-screen p-2 flex gap-3 items-center ${styles.header}`}
+      className={`h-16 w-screen px-2 flex gap-3 items-center justify-between ${styles.header}`}
     >
       <Logo />
       {children}

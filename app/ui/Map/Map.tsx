@@ -42,33 +42,35 @@ const Map = ({
     }).setLngLat([0, 0]),
   );
 
-  const getUserLocationDetails = async (
-    latitude: number,
-    longitude: number,
-  ) => {
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
-      );
-
-      if (response.ok) {
-        const { features } = await response.json();
-        const { address: longName, ...other } = transformLocation(
-          features as { id: string; text: string }[],
+  const getUserLocationDetails = useCallback(
+    async (latitude: number, longitude: number) => {
+      try {
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
         );
 
-        setUserLocation((userLocation) => ({
-          ...userLocation,
-          longName,
-          ...other,
-        }));
-      } else {
-        throw new Error("Failed to fetch data");
+        if (response.ok) {
+          const { features } = await response.json();
+          const { address: longName, ...other } = transformLocation(
+            features as { id: string; text: string }[],
+          );
+
+          setUserLocation((userLocation) => ({
+            ...userLocation,
+            longName,
+            ...other,
+            latitude,
+            longitude,
+          }));
+        } else {
+          throw new Error("Failed to fetch data");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    },
+    [setUserLocation],
+  );
 
   const getCoordinates = (item: UserLocation) =>
     [item.longitude, item.latitude] as LngLatLike;
@@ -163,18 +165,13 @@ const Map = ({
       });
       map.current!.addControl(geoControl, "top-right");
 
-      geoControl.on(
-        "geolocate",
-        // @ts-ignore
-        ({
+      geoControl.on("geolocate", (listener) => {
+        const {
           coords: { latitude, longitude },
-        }: {
-          coords: { latitude: number; longitude: number };
-        }) => {
-          getUserLocationDetails(latitude, longitude);
-          geocoder.clear();
-        },
-      );
+        } = listener as { coords: { latitude: number; longitude: number } };
+        getUserLocationDetails(latitude, longitude);
+        geocoder.clear();
+      });
 
       // Change the cursor to a pointer when the mouse is over the places layer.
       map.current!.on("mouseenter", "places", () => {

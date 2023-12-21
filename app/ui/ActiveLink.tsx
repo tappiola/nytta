@@ -11,11 +11,17 @@ const ActiveLink = ({
 }) => {
   const pathname = usePathname();
 
+  const isActiveLink = pathname === href;
+
   return (
     <Link
       href={href}
-      style={{ color: pathname === href ? "pink" : "white" }}
-      className="no-underline p-2"
+      style={isActiveLink ? { borderBottomStyle: "solid" } : {}}
+      className={`no-underline p-2 flex items-center px-3 h-full ${
+        isActiveLink
+          ? `text-gray-100 font-semibold border-b-2 border-teal-500`
+          : "text-gray-300"
+      }`}
     >
       {children}
     </Link>

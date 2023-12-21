@@ -64,20 +64,6 @@ const AmenitiesDataTable = ({
     setGlobalFilterValue(value);
   };
 
-  const renderHeader = () => {
-    return (
-      <Header>
-        <span className="p-input-icon-left ms-auto me-0">
-          <i className="pi pi-search" />
-          <InputText
-            value={globalFilterValue}
-            onChange={onGlobalFilterChange}
-            placeholder="Keyword Search"
-          />
-        </span>
-      </Header>
-    );
-  };
   const amenityBodyTemplate = (rowData: Amenity) => {
     return (
       <Tag
@@ -112,7 +98,6 @@ const AmenitiesDataTable = ({
 
   return (
     <div className="card">
-      {renderHeader()}
       <DataTable
         value={savedAmenities}
         paginator

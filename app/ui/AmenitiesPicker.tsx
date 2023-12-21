@@ -11,6 +11,9 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { isEqual } from "lodash";
 import { removeNullUndefined } from "@/app/lib/util";
 import { Toast } from "primereact/toast";
+import { Message } from "primereact/message";
+
+const MAX_AMENITIES = 7;
 
 const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const [selectedCategories, setSelectedCategories] =
@@ -21,6 +24,8 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const [prevLocation, setPrevLocation] = useState<UserLocation>({});
   const { user: { sub } = {} } = useUser();
   const toastRef = useRef<Toast>(null);
+
+  console.log(userLocation);
 
   useEffect(() => {
     const loadAmenities = async () => {
@@ -105,6 +110,9 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
     });
   };
 
+  const tooManyAmenities =
+    Object.keys(selectedCategories).length > MAX_AMENITIES;
+
   return (
     <div className="h-screen flex flex-col">
       <Toast ref={toastRef} position="bottom-right" />
@@ -124,15 +132,18 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
               </p>
               <p className="m-0">
                 Let businesses know what amenities you are missing in your local
-                area! You can select up to 7, pick the most desired ones.
+                area! You can select up to {MAX_AMENITIES}, pick the most
+                desired ones.
               </p>
             </>
           )}
         </div>
         <Button
           type="button"
+          className="shrink-0"
           disabled={
             !Object.keys(selectedCategories).length ||
+            tooManyAmenities ||
             !userLocation.latitude ||
             !userLocation.longitude ||
             (isEqual(savedCategories, selectedCategories) &&
@@ -160,11 +171,13 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
           setSelectedCategories={setSelectedCategories}
         />
         <Map userLocation={userLocation} setUserLocation={setUserLocation} />
-        {/*<Message*/}
-        {/*  severity="warn"*/}
-        {/*  text="Please, select no more than 7 amenities"*/}
-        {/*  className="fixed bottom-4 end-4"*/}
-        {/*/>*/}
+        {tooManyAmenities && (
+          <Message
+            severity="warn"
+            text={`Please, select no more than ${MAX_AMENITIES} amenities`}
+            className="fixed bottom-6 left-1/2 transform -translate-x-1/2"
+          />
+        )}
       </main>
     </div>
   );

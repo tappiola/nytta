@@ -41,10 +41,10 @@ const Page = async () => {
     });
   };
 
-  getCount("All Categories", categoriesTree);
+  getCount("All Spheres", categoriesTree);
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-3 gap-3 m-4">
       {datasets.map(({ name, dataset }, i) => (
         <PieChart key={i} name={name} dataset={dataset} />
       ))}
