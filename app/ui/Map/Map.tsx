@@ -19,6 +19,7 @@ import { UserLocation } from "@/app/ui/types";
 import resolveConfig from "tailwindcss/resolveConfig";
 import myConfig from "@/tailwind.config";
 import "./Map.styles.css";
+import { Toast } from "primereact/toast";
 
 const tailwindConfig = resolveConfig(myConfig);
 
@@ -35,32 +36,33 @@ const Map = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
+  const toastRef = useRef<Toast>(null);
 
   const getUserLocationDetails = useCallback(
     async (latitude: number, longitude: number) => {
-      try {
-        const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
+      );
+
+      if (response.ok) {
+        const { features } = await response.json();
+        const { address: longName, ...other } = transformLocation(
+          features as { id: string; text: string }[],
         );
 
-        if (response.ok) {
-          const { features } = await response.json();
-          const { address: longName, ...other } = transformLocation(
-            features as { id: string; text: string }[],
-          );
-
-          setUserLocation((userLocation) => ({
-            ...userLocation,
-            longName,
-            ...other,
-            latitude,
-            longitude,
-          }));
-        } else {
-          throw new Error("Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        setUserLocation((userLocation) => ({
+          ...userLocation,
+          longName,
+          ...other,
+          latitude,
+          longitude,
+        }));
+      } else {
+        toastRef.current!.show({
+          severity: "error",
+          summary: "Failed to get user location",
+          life: 2000,
+        });
       }
     },
     [setUserLocation],
@@ -208,7 +210,12 @@ const Map = ({
     });
   }, [generateFeature, map]);
 
-  return <div ref={mapContainer} className="h-full grow" id="dynamic-map" />;
+  return (
+    <>
+      <Toast ref={toastRef} position="bottom-right" />
+      <div ref={mapContainer} className="h-full grow" id="dynamic-map" />
+    </>
+  );
 };
 
 export default Map;

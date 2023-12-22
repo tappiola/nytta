@@ -1,17 +1,13 @@
-"use client";
 import Link from "next/link";
 import React from "react";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import Header from "@/app/ui/Header";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import Image from "next/image";
-import bakery from "@/public/images/bakery-with-signboard-saying--bakery-.png";
-import chart from "@/public/images/pie---donut-chart-with-statistics.png";
+import bakery from "@/public/images/bakery.png";
+import chart from "@/public/images/pie-chart.png";
 
-export default function Home() {
-  const { user } = useUser();
-
+const Home = () => {
   return (
     <>
       <Header>
@@ -74,4 +70,6 @@ export default function Home() {
       </main>
     </>
   );
-}
+};
+
+export default Home;

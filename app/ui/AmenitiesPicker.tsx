@@ -25,8 +25,6 @@ const AmenitiesPicker = ({ categories }: { categories: Categories }) => {
   const { user: { sub } = {} } = useUser();
   const toastRef = useRef<Toast>(null);
 
-  console.log(userLocation);
-
   useEffect(() => {
     const loadAmenities = async () => {
       const userAmenities = await getUserAmenities(sub!);
