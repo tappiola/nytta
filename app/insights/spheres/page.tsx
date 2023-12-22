@@ -8,7 +8,7 @@ import { Dataset } from "@/app/ui/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Split by Spheres | Nýtta",
+  title: "Spheres Insights| Nýtta",
 };
 
 const Page = async () => {
