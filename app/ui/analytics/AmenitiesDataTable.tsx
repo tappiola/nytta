@@ -1,40 +1,27 @@
 "use client";
-import React, { useState, ChangeEventHandler } from "react";
+import React from "react";
 import { FilterMatchMode } from "primereact/api";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { Tag } from "primereact/tag";
 
 import { sortBy } from "lodash";
-import Header from "@/app/ui/Header";
-import { Amenity, AmenityCategory, Categories, Category } from "@/app/ui/types";
-
-type Filter = {
-  value: null | string;
-  matchMode: FilterMatchMode;
-};
-
-type FilterObject = {
-  [key: string]: Filter;
-};
+import { Amenity, AmenityCategory } from "@/app/ui/types";
 
 const AmenitiesDataTable = ({
   savedAmenities,
 }: {
   savedAmenities: Amenity[];
 }) => {
-  const [filters, setFilters] = useState<FilterObject>({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  const filters = {
     "amenity.name": { value: null, matchMode: FilterMatchMode.IN },
     postcode: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     locality: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     neighborhood: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     place: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     district: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-  });
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
+  };
 
   const getSeverity = (amenity: AmenityCategory) => {
     const { id, parentId } = amenity;
@@ -55,13 +42,6 @@ const AmenitiesDataTable = ({
       case 1:
         return null;
     }
-  };
-
-  const onGlobalFilterChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const value = e.target.value;
-
-    setFilters({ ...filters, global: { ...filters.global, value } });
-    setGlobalFilterValue(value);
   };
 
   const amenityBodyTemplate = (rowData: Amenity) => {
@@ -85,10 +65,7 @@ const AmenitiesDataTable = ({
             new Set(savedAmenities.map(({ amenity: { name } }) => name)),
           ),
         )}
-        onChange={(e) => {
-          console.log(e);
-          options.filterApplyCallback(e.value);
-        }}
+        onChange={(e) => options.filterApplyCallback(e.value)}
         placeholder="Any"
         className="p-column-filter"
         style={{ minWidth: "14rem" }}

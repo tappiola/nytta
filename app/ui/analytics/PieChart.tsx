@@ -1,9 +1,9 @@
 import React from "react";
 import { Chart } from "primereact/chart";
 import { Card } from "primereact/card";
-import { Dataset } from "@/app/insights/geo/page";
 import myConfig from "@/tailwind.config";
 import resolveConfig from "tailwindcss/resolveConfig";
+import { Dataset } from "@/app/ui/types";
 
 const tailwindConfig = resolveConfig(myConfig);
 

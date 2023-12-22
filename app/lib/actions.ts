@@ -101,10 +101,8 @@ export const create = async (
     });
     await prisma.userChoice.createMany({ data: amenitiesToCreate });
     revalidatePath("/insights", "layout");
-    console.log(`Amenities created successfully`);
     return { status: "success" };
   } catch (error) {
-    console.error(`Error creating amenities:`, error);
     return { status: "error" };
   }
 };

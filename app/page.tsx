@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import Header from "@/app/ui/Header";
+import Header from "@/app/ui/header/Header";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import Image from "next/image";

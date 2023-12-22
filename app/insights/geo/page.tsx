@@ -1,11 +1,14 @@
 import React from "react";
-import { Amenity } from "@/app/ui/types";
+import { Amenity, Dataset } from "@/app/ui/types";
 import { countBy, omitBy } from "lodash";
-import PieChart from "@/app/ui/PieChart";
+import PieChart from "@/app/ui/analytics/PieChart";
 import { getAmenitiesData } from "@/app/lib/actions";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+import type { Metadata } from "next";
 
-export type Dataset = { [key: string]: number };
+export const metadata: Metadata = {
+  title: "Geo Split | Nýtta",
+};
 
 const CategoryCharts = async () => {
   const amenities = await getAmenitiesData();
@@ -20,7 +23,7 @@ const CategoryCharts = async () => {
   const datasets: { name: string; dataset: Dataset }[] = datasetsConfig.map(
     ({ name, field }) => {
       const dataset = countBy(
-        omitBy(amenities, (a) => !a[field]),
+        omitBy(amenities, (amenity) => !amenity[field]),
         field,
       );
 

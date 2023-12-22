@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { getAmenitiesData, getCategories } from "@/app/lib/actions";
+import { FilterMatchMode } from "primereact/api";
 
 export interface UserLocation {
   shortName?: string;
@@ -32,3 +33,5 @@ export type Amenities = Prisma.PromiseReturnType<typeof getAmenitiesData>;
 export type Amenity = Amenities[number] & {
   amenity: AmenityCategory;
 };
+
+export type Dataset = { [key: string]: number };

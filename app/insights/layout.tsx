@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
-import ActiveLink from "@/app/ui/ActiveLink";
-import Header from "@/app/ui/Header";
+import ActiveLink from "@/app/ui//header/ActiveLink";
+import Header from "@/app/ui/header/Header";
 
 const MENU_CONFIG = [
   {

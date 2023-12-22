@@ -1,5 +1,5 @@
 import { getCategories } from "@/app/lib/actions";
-import AmenitiesPicker from "@/app/ui/AmenitiesPicker";
+import AmenitiesPicker from "@/app/ui/amenities/AmenitiesPicker";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import type { Metadata } from "next";
 

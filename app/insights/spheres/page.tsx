@@ -1,11 +1,15 @@
 import React from "react";
 import { filter, size } from "lodash";
 import { createTree, extractIdsFromTree, TreeNode } from "@/app/lib/util";
-import PieChart from "@/app/ui/PieChart";
+import PieChart from "@/app/ui/analytics/PieChart";
 import { getAmenitiesData, getCategories } from "@/app/lib/actions";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { Dataset } from "@/app/ui/types";
+import type { Metadata } from "next";
 
-export type Dataset = { [key: string]: number };
+export const metadata: Metadata = {
+  title: "Split by Spheres | Nýtta",
+};
 
 const Page = async () => {
   const amenities = await getAmenitiesData();
@@ -14,9 +18,9 @@ const Page = async () => {
   const categoriesTree = createTree(categories);
   const datasets: { name: string; dataset: Dataset }[] = [];
 
-  const getCount = (name: string, tree: TreeNode[]) => {
-    const r = tree.reduce((prev, c) => {
-      const ids = extractIdsFromTree(c);
+  const getChildrenCount = (name: string, tree: TreeNode[]) => {
+    const dataset = tree.reduce((prev, treeNode) => {
+      const ids = extractIdsFromTree(treeNode);
       const newSize = size(
         filter(amenities, (a) => ids.includes(a.amenity.id)),
       );
@@ -24,25 +28,25 @@ const Page = async () => {
       return newSize
         ? {
             ...prev,
-            [c.name]: size(
+            [treeNode.name]: size(
               filter(amenities, (a) => ids.includes(a.amenity.id)),
             ),
           }
         : prev;
     }, {});
 
-    if (Object.keys(r).length > 1) {
-      datasets.push({ name, dataset: r });
+    if (Object.keys(dataset).length > 1) {
+      datasets.push({ name, dataset });
     }
 
-    tree.forEach((c) => {
-      if (c.children) {
-        getCount(c.name, c.children);
+    tree.forEach(({ name, children }) => {
+      if (children) {
+        getChildrenCount(name, children);
       }
     });
   };
 
-  getCount("All Spheres", categoriesTree);
+  getChildrenCount("All Spheres", categoriesTree);
 
   return (
     <div className="grid grid-cols-3 gap-3 m-4">

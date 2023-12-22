@@ -1,10 +1,5 @@
 "use client";
-import mapboxgl, {
-  GeoJSONSource,
-  GeolocateControl,
-  LngLatLike,
-} from "mapbox-gl";
-import { Feature, Point } from "geojson";
+import mapboxgl, { GeolocateControl, LngLatLike } from "mapbox-gl";
 import React, {
   Dispatch,
   SetStateAction,
@@ -26,6 +21,9 @@ const tailwindConfig = resolveConfig(myConfig);
 const MAPBOX_GL_TOKEN =
   "pk.eyJ1IjoidGFwcGlvbGEiLCJhIjoiY2t6eHhuM2N6MDYyMTJ2cDcxcDVsem8zNiJ9.OByK2fsCvb8XsvT2OYUEjA";
 
+const MAP_CENTER: LngLatLike = [-0.1278, 51.5074];
+const CUSTOM_MAP = "mapbox://styles/tappiola/clq0tewgv01os01o925c538u8";
+
 const Map = ({
   userLocation,
   setUserLocation,
@@ -38,8 +36,13 @@ const Map = ({
   const marker = useRef<mapboxgl.Marker | null>(null);
   const toastRef = useRef<Toast>(null);
 
-  const getUserLocationDetails = useCallback(
-    async (latitude: number, longitude: number) => {
+  const updateUserLocation = useCallback(
+    async (location: UserLocation) => {
+      setUserLocation(location);
+
+      const { longitude, latitude } = location;
+
+      // using api to get additional location details based on coordinates
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_GL_TOKEN}`,
       );
@@ -71,20 +74,6 @@ const Map = ({
   const getCoordinates = (item: UserLocation) =>
     [item.longitude, item.latitude] as LngLatLike;
 
-  const generateFeature = useCallback(() => {
-    return {
-      type: "Feature",
-      properties: {
-        description: "description",
-        id: 0,
-      },
-      geometry: {
-        type: "Point",
-        coordinates: getCoordinates(userLocation),
-      },
-    } as Feature<Point>;
-  }, [userLocation]);
-
   const transformLocation = (context: { id: string; text: string }[]) =>
     context.reduce<{
       [key: string]: string;
@@ -96,8 +85,8 @@ const Map = ({
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current!,
-      style: "mapbox://styles/tappiola/clq0tewgv01os01o925c538u8",
-      center: [-0.1278, 51.5074],
+      style: CUSTOM_MAP,
+      center: MAP_CENTER,
       zoom: 11,
     });
 
@@ -111,18 +100,6 @@ const Map = ({
     }
 
     map.current.on("load", () => {
-      map.current!.addLayer({
-        id: "places",
-        type: "symbol",
-        source: {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [generateFeature()],
-          },
-        },
-      });
-
       const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
         mapboxgl,
@@ -135,8 +112,7 @@ const Map = ({
       map.current!.on("click", ({ lngLat, lngLat: { lng, lat } }) => {
         geocoder.clear();
         marker.current!.setLngLat(lngLat);
-        setUserLocation({ longitude: lng, latitude: lat });
-        getUserLocationDetails(lat, lng);
+        updateUserLocation({ latitude: lat, longitude: lng });
       });
 
       geocoder.on(
@@ -149,14 +125,13 @@ const Map = ({
             geometry: { coordinates },
           },
         }) => {
-          setUserLocation({
+          updateUserLocation({
             shortName: text,
             longName: place_name,
             ...transformLocation(context as { id: string; text: string }[]),
             latitude: coordinates[1],
             longitude: coordinates[0],
           });
-          getUserLocationDetails(coordinates[1], coordinates[0]);
         },
       );
 
@@ -169,24 +144,22 @@ const Map = ({
       map.current!.addControl(geoControl, "top-right");
 
       geoControl.on("geolocate", (listener) => {
-        const {
-          coords: { latitude, longitude },
-        } = listener as { coords: { latitude: number; longitude: number } };
-        getUserLocationDetails(latitude, longitude);
+        const { coords } = listener as {
+          coords: { latitude: number; longitude: number };
+        };
+        updateUserLocation(coords);
         geocoder.clear();
       });
 
-      // Change the cursor to a pointer when the mouse is over the places layer.
       map.current!.on("mouseenter", "places", () => {
         map.current!.getCanvas().style.cursor = "pointer";
       });
 
-      // Change it back to a pointer when it leaves.
       map.current!.on("mouseleave", "places", () => {
         map.current!.getCanvas().style.cursor = "";
       });
     });
-  }, [getUserLocationDetails, generateFeature, setUserLocation]);
+  }, [updateUserLocation]);
 
   useEffect(() => {
     if (map.current && userLocation.latitude && userLocation.longitude) {
@@ -197,18 +170,6 @@ const Map = ({
       marker.current!.setLngLat(getCoordinates(userLocation));
     }
   }, [map, userLocation]);
-
-  useEffect(() => {
-    if (!map.current || !map.current.getSource("places")) {
-      return;
-    }
-
-    const source = map.current.getSource("places") as GeoJSONSource;
-    source.setData({
-      type: "FeatureCollection",
-      features: [generateFeature()],
-    });
-  }, [generateFeature, map]);
 
   return (
     <>

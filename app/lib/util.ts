@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { getCategories } from "@/app/lib/actions";
+import { TreeCheckboxSelectionKeys } from "primereact/tree";
+import { Categories } from "@/app/ui/types";
 
 type Amenities = Prisma.PromiseReturnType<typeof getCategories>;
 
@@ -42,4 +44,21 @@ export const extractIdsFromTree = (node: TreeNode): Number[] => {
   }
 
   return ids;
+};
+
+export const getCategoriesNames = (
+  categories: Categories,
+  selectedCategories: TreeCheckboxSelectionKeys,
+) => {
+  const categoriesKeys = Object.keys(selectedCategories)
+    .filter(
+      (key) =>
+        selectedCategories[key].checked &&
+        categories.find(({ id }) => id === +key)?.childrenCount === 0,
+    )
+    .map((key) => key);
+
+  return categories
+    .filter(({ id }) => categoriesKeys.includes(id.toString()))
+    .map(({ name }) => name);
 };

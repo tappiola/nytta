@@ -1,0 +1,27 @@
+.p-tree-filter-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.p-tree-filter-container:before {
+    content: "1";
+    background-color: #94a3b8;
+    border-radius: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--surface-b);
+    font-weight: 700;
+}
+
+.two-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
