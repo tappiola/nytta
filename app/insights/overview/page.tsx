@@ -14,4 +14,6 @@ const Insights = async () => {
   return <AmenitiesDataTable savedAmenities={amenities} />;
 };
 
-export default withPageAuthRequired(Insights, { returnTo: "/insights" });
+export default withPageAuthRequired(Insights, {
+  returnTo: "/insights/overview",
+});

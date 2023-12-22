@@ -34,13 +34,7 @@ const Map = ({
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-
-  const marker = useRef(
-    new mapboxgl.Marker({
-      draggable: true,
-      color: tailwindConfig.theme.colors.teal["400"],
-    }).setLngLat([0, 0]),
-  );
+  const marker = useRef<mapboxgl.Marker | null>(null);
 
   const getUserLocationDetails = useCallback(
     async (latitude: number, longitude: number) => {
@@ -105,7 +99,14 @@ const Map = ({
       zoom: 11,
     });
 
-    marker.current.addTo(map.current);
+    if (!marker.current) {
+      marker.current = new mapboxgl.Marker({
+        draggable: true,
+        color: tailwindConfig.theme.colors.teal["400"],
+      }).setLngLat([0, 0]);
+
+      marker.current.addTo(map.current);
+    }
 
     map.current.on("load", () => {
       map.current!.addLayer({
@@ -131,7 +132,7 @@ const Map = ({
 
       map.current!.on("click", ({ lngLat, lngLat: { lng, lat } }) => {
         geocoder.clear();
-        marker.current.setLngLat(lngLat);
+        marker.current!.setLngLat(lngLat);
         setUserLocation({ longitude: lng, latitude: lat });
         getUserLocationDetails(lat, lng);
       });
@@ -191,7 +192,7 @@ const Map = ({
         center: getCoordinates(userLocation),
         zoom: 17,
       });
-      marker.current.setLngLat(getCoordinates(userLocation));
+      marker.current!.setLngLat(getCoordinates(userLocation));
     }
   }, [map, userLocation]);
 

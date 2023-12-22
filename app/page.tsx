@@ -13,16 +13,11 @@ export default function Home() {
   const { user } = useUser();
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
+    <>
       <Header>
         <div className="grow" />
-        {!user && (
-          <Link href="/api/auth/login" className="ms-auto me-0">
-            <Button label="Login" />
-          </Link>
-        )}
       </Header>
-      <section className="flex flex-column gap-6 my-12 justify-content-center mx-8">
+      <main className="flex flex-column gap-6 my-12 justify-content-center mx-8">
         <Link href="/amenities" className="no-underline w-400px basis-4/12">
           <Card className="py-0">
             <div className="flex flex-row-reverse items-center gap-10 px-6">
@@ -38,7 +33,12 @@ export default function Home() {
                   Let businesses know what amenities you are missing in your
                   local area!
                 </p>
-                <Button className="mt-4">Select Amenities</Button>
+                <Button
+                  className="mt-4"
+                  label="Select Amenities"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                />
               </div>
             </div>
           </Card>
@@ -61,12 +61,17 @@ export default function Home() {
                   Welcome to Nýtta Business Insights - service providing market
                   analysis data combined with feedback from real users
                 </p>
-                <Button className="mt-4">Explore Business Insights</Button>
+                <Button
+                  className="mt-4"
+                  label="Explore Business Insights"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                />
               </div>
             </div>
           </Card>
         </Link>
-      </section>
-    </main>
+      </main>
+    </>
   );
 }

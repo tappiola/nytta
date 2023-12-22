@@ -3,6 +3,7 @@ import { filter, size } from "lodash";
 import { createTree, extractIdsFromTree, TreeNode } from "@/app/lib/util";
 import PieChart from "@/app/ui/PieChart";
 import { getAmenitiesData, getCategories } from "@/app/lib/actions";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 export type Dataset = { [key: string]: number };
 
@@ -52,4 +53,6 @@ const Page = async () => {
   );
 };
 
-export default Page;
+export default withPageAuthRequired(Page, {
+  returnTo: "/insights/spheres",
+});

@@ -3,6 +3,7 @@ import { Amenity } from "@/app/ui/types";
 import { countBy, omitBy } from "lodash";
 import PieChart from "@/app/ui/PieChart";
 import { getAmenitiesData } from "@/app/lib/actions";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 export type Dataset = { [key: string]: number };
 
@@ -36,4 +37,6 @@ const CategoryCharts = async () => {
   );
 };
 
-export default CategoryCharts;
+export default withPageAuthRequired(CategoryCharts, {
+  returnTo: "/insights/geo",
+});
