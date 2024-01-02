@@ -19,7 +19,7 @@ import { Toast } from "primereact/toast";
 const tailwindConfig = resolveConfig(myConfig);
 
 const MAPBOX_GL_TOKEN =
-  "pk.eyJ1IjoidGFwcGlvbGEiLCJhIjoiY2t6eHhuM2N6MDYyMTJ2cDcxcDVsem8zNiJ9.OByK2fsCvb8XsvT2OYUEjA";
+  process.env.NEXT_PUBLIC_MAPBOX_GL_TOKEN || "MAPBOX_GL_TOKEN_UNDEFINED";
 
 const MAP_CENTER: LngLatLike = [-0.1278, 51.5074];
 const CUSTOM_MAP = "mapbox://styles/tappiola/clq0tewgv01os01o925c538u8";
