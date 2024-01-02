@@ -1,13 +1,11 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Amenity {
@@ -21,17 +19,17 @@ model UserChoice {
   id                Int     @id @default(autoincrement())
   shortName         String?
   longName          String?
-  locality          String?
   district          String?
   place             String?
-  neighborhood      String?
   postcode          String?
   region            String?
   country           String?
   latitude          Float
   longitude         Float
   userId            String
+  neighborhood      String?
+  locality          String?
   partiallySelected Boolean @default(false)
-  amenity           Amenity @relation(fields: [amenityId], references: [id])
   amenityId         Int
+  amenity           Amenity @relation(fields: [amenityId], references: [id])
 }
